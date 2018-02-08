@@ -6,6 +6,28 @@ using System.Threading.Tasks;
 
 namespace Common.Domain
 {
+
+    public class BaseArea : EntityBase<int>
+    {
+        public int? Pid { get; set; }
+
+        public int Type { get; set; }
+
+        public string Name { get; set; }
+
+        public int Level { get; set; }
+
+        public string Code { get; set; }
+
+        public string PCode { get; set; }
+
+        public string Area { get; set; }
+
+        //public string ZipCode { get; set; }
+        //public string TelCode { get; set; }
+    }
+
+
     public class Article : EntityBase<int>
     {
         public Article()
@@ -48,4 +70,17 @@ namespace Common.Domain
         public virtual Article Article { get; set; }
 
     }
+
+    public class FeedBack : EntityBase<int>
+    {
+        public int UserID { get; set; }
+        public virtual User User { get; set; }
+
+        public string Content { get; set; }
+
+        public string Process { get; set; }
+
+        public int State { get; set; }
+    }
+
 }

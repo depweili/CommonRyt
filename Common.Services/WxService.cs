@@ -103,7 +103,7 @@ namespace Common.Services
 
                         UserProfile userpf = new UserProfile
                         {
-                            ID = user.Id,
+                            Id = user.Id,
                             NickName = wxuser.userinfo["nickName"].ToString(),
                             AvatarUrl = wxuser.userinfo["avatarUrl"].ToString()
                         };
@@ -124,6 +124,12 @@ namespace Common.Services
                             User = user
                         };
                         db.Set<UserIntegral>().Add(ui);
+
+                        Patient p = new Patient
+                        {
+                            User = user
+                        };
+                        db.Set<Patient>().Add(p);
 
                         try
                         {

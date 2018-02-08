@@ -14,7 +14,6 @@ namespace Common.Domain
             IntegralID = Guid.NewGuid();
             IntegralGradeID = 1;
         }
-        public int ID { get; set; }
 
         public Guid IntegralID { get; set; }
 
@@ -23,7 +22,6 @@ namespace Common.Domain
         public int CurrentPoints { get; set; }
 
         public int TotalExpense { get; set; }
-
         public int? IntegralGradeID { get; set; }
         public virtual IntegralGrade IntegralGrade { get; set; }
 
@@ -43,10 +41,7 @@ namespace Common.Domain
     {
         public IntegralGrade()
         {
-            IsValid = true;
-            CreateTime = DateTime.Now;
         }
-        public int ID { get; set; }
 
         public int Grade { get; set; }
 
@@ -60,10 +55,7 @@ namespace Common.Domain
     {
         public IntegralActivity()
         {
-            IsValid = true;
-            CreateTime = DateTime.Now;
         }
-        public int ID { get; set; }
 
         public int Type { get; set; }
 
@@ -80,11 +72,11 @@ namespace Common.Domain
         public int? ArticleID { get; set; }
         public virtual Article Article { get; set; }
 
-        public Nullable<DateTime> BeginTime { get; set; }
+        public DateTime? BeginTime { get; set; }
 
-        public Nullable<DateTime> EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
-        public Nullable<bool> IsOpen { get; set; }
+        public bool? IsOpen { get; set; }
 
         public int? IntegralRuleID { get; set; }
         public virtual IntegralRule IntegralRule { get; set; }
@@ -94,10 +86,7 @@ namespace Common.Domain
     {
         public IntegralRule()
         {
-            IsValid = true;
-            CreateTime = DateTime.Now;
         }
-        public int ID { get; set; }
 
         public int Type { get; set; }
 
@@ -122,20 +111,13 @@ namespace Common.Domain
         public int? MaxPoints { get; set; }
 
         public int? MaxTotalPoints { get; set; }
-
-        public Nullable<bool> IsValid { get; set; }
-
-        public Nullable<DateTime> CreateTime { get; set; }
     }
 
     public class IntegralRecord : EntityBase<int>
     {
         public IntegralRecord()
         {
-            IsValid = true;
-            RecordTime = DateTime.Now;
         }
-        public int ID { get; set; }
 
         public string ShortMark { get; set; }
 
@@ -168,7 +150,6 @@ namespace Common.Domain
 
     public class IntegralSignIn : EntityBase<int>
     {
-        public int ID { get; set; }
 
         public DateTime? LastTime { get; set; }
 
@@ -183,10 +164,7 @@ namespace Common.Domain
     {
         public IntegralUserActivity()
         {
-            IsValid = true;
-            CreateTime = DateTime.Now;
         }
-        public int ID { get; set; }
 
         public string Memo { get; set; }
 
@@ -200,6 +178,6 @@ namespace Common.Domain
 
         public int State { get; set; }
 
-        public Nullable<DateTime> CompleteTime { get; set; }
+        public DateTime? CompleteTime { get; set; }
     }
 }

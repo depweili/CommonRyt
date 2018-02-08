@@ -59,11 +59,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoMapper\AutoMapperHelper.cs" />
+    <Compile Include="AutoMapper\Configuration.cs" />
     <Compile Include="BaseResponse.cs" />
     <Compile Include="CommonService.cs" />
+    <Compile Include="Dtos\DoctorDto.cs" />
     <Compile Include="Dtos\GeneralDto.cs" />
+    <Compile Include="Dtos\PatientDto.cs" />
     <Compile Include="Dtos\UserDto.cs" />
     <Compile Include="Function.cs" />
+    <Compile Include="RytService.cs" />
     <Compile Include="ServiceBase.cs" />
     <Compile Include="UtilityService.cs" />
     <Compile Include="WxService.cs" />

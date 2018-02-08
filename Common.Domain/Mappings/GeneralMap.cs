@@ -15,7 +15,7 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Title).HasMaxLength(200);
             this.Property(t => t.Content).HasColumnType("ntext");
             this.Property(t => t.Code).HasMaxLength(20);
-            this.Property(t => t.Author).HasMaxLength(40);
+            this.Property(t => t.Author).HasMaxLength(20);
             //this.Property(t => t.CreateTime).IsRequired();
 
             //this.Map(t => t.Requires("CreateTime").HasValue<DateTime>(DateTime.Now));

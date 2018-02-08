@@ -9,7 +9,6 @@ namespace Common.Util
 {
     public class RandomHelper
     {
-        private int rep = 0;
         private static string randomString = "0123456789ABCDEFGHIJKMLNOPQRSTUVWXYZ";
         private static Random random = new Random(DateTime.Now.Second);
 

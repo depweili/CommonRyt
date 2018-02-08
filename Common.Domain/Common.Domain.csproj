@@ -47,15 +47,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assistant.cs" />
     <Compile Include="BaseEntity.cs" />
     <Compile Include="CommonContext.cs" />
+    <Compile Include="DoctorBusiness.cs" />
+    <Compile Include="DoctorPatient.cs" />
     <Compile Include="General.cs" />
+    <Compile Include="Doctor.cs" />
     <Compile Include="Integral.cs" />
+    <Compile Include="Mappings\DoctorMap.cs" />
     <Compile Include="Mappings\GeneralMap.cs" />
     <Compile Include="Mappings\IntegralMap.cs" />
+    <Compile Include="Mappings\PatientMap.cs" />
     <Compile Include="Mappings\UserMap.cs" />
+    <Compile Include="Patient.cs" />
+    <Compile Include="RytDbContextInitializer.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Video.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

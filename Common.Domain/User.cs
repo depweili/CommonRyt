@@ -11,8 +11,6 @@ namespace Common.Domain
     {
         public User()
         {
-            IsValid = true;
-            CreateTime = DateTime.Now;
             AuthID = Guid.NewGuid();
             UserName = RandomHelper.GetRandomString(8);
         }
@@ -38,7 +36,6 @@ namespace Common.Domain
         {
             IsVerified = false;
         }
-        public int ID { get; set; }
 
         public string NickName { get; set; }
 
