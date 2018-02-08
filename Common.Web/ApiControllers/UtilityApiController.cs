@@ -12,6 +12,13 @@ namespace Common.Web.ApiControllers
 {
     public class UtilityApiController : ApiControllerBase
     {
+        /// <summary>
+        /// 微信用户授权
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="iv"></param>
+        /// <param name="encryptedData"></param>
+        /// <returns></returns>
         [Route("api/WxUserInfo")]
         [HttpGet]
         public IHttpActionResult GetWxUser(string code, string iv, string encryptedData)

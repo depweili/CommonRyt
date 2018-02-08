@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Services.Dtos
 {
-    public class HospitalDto
+    public class HospitalDto: DtoBase<int>
     {
         public string Name { get; set; }
 
@@ -23,7 +23,7 @@ namespace Common.Services.Dtos
         //public virtual ICollection<MedicineDepartment> MedicineDepartments { get; set; }
     }
 
-    public class MedicineCategoryDto
+    public class MedicineCategoryDto : DtoBase<int>
     {
         public string Name { get; set; }
 
@@ -31,7 +31,7 @@ namespace Common.Services.Dtos
     }
     
 
-    public class DoctorDto
+    public class DoctorDto : DtoBase<int>
     {
 
         public Guid Uid { get; set; }

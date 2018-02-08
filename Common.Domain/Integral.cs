@@ -12,7 +12,6 @@ namespace Common.Domain
         public UserIntegral()
         {
             IntegralID = Guid.NewGuid();
-            IntegralGradeID = 1;
         }
 
         public Guid IntegralID { get; set; }
@@ -22,6 +21,7 @@ namespace Common.Domain
         public int CurrentPoints { get; set; }
 
         public int TotalExpense { get; set; }
+
         public int? IntegralGradeID { get; set; }
         public virtual IntegralGrade IntegralGrade { get; set; }
 

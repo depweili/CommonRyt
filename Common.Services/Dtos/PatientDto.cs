@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Common.Services.Dtos
 {
-    class PatientDto
+    public class PatientDto : DtoBase<int>
     {
+
     }
 }

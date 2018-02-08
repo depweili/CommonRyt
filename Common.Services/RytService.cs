@@ -1,5 +1,7 @@
 ﻿using Common.Domain;
 using Common.Services.Dtos;
+using Common.Util;
+using Common.Util.Extesions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,9 +49,23 @@ namespace Common.Services
             {
                 db.Configuration.ProxyCreationEnabled = false;
 
-                var data = db.Set<Hospital>().Take(100);
+                IEnumerable<Hospital> dblist = null;
 
-                var res = data.MapToList<HospitalDto>();
+                var expression = LinqExtensions.True<Hospital>();
+                var queryParam = queryJson.ToJObject();
+
+                if (!queryParam["area"].IsEmpty())
+                {
+                    string keyord = queryParam["area"].ToString();
+                    expression = expression.And(t => t.Area.Name == keyord);
+                }
+
+                var query = db.Set<Hospital>().Where(expression).OrderBy(t => t.Name);
+
+                dblist = query.Take(100);
+                //var data = db.Set<Hospital>().Take(100);
+
+                var res = dblist.MapToList<HospitalDto>();
 
                 return res;
             }
@@ -59,7 +75,7 @@ namespace Common.Services
         {
             using (var db = base.NewDB())
             {
-                var data = db.Set<MedicineCategory>().OrderBy(t => t.Name);
+                var data = db.Set<MedicineCategory>().OrderBy(t => t.Order);
 
                 var res = data.MapToList<MedicineCategoryDto>();
 

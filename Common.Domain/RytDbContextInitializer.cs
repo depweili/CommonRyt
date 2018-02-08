@@ -12,6 +12,13 @@ namespace Common.Domain
     {
         protected override void Seed(CommonContext db)
         {
+            var IntegralGradeData = db.Set<IntegralGrade>().AddRange(new List<IntegralGrade>()
+            {
+                new IntegralGrade{  Grade=1,  Title="1"},
+                new IntegralGrade{  Grade=2,  Title="2"},
+                new IntegralGrade{  Grade=3,  Title="3"},
+            });
+
             var HospitalData=db.Set<Hospital>().AddRange(new List<Hospital>()
             {
                 new Hospital{ Name="北京协和医院", FullName="北京协和医院", Level=9 },

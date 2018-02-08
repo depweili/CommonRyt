@@ -16,7 +16,7 @@ namespace Common.Domain
         public string Name { get; set; }
         public string Gender { get; set; }
 
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
         public string Telephone { get; set; }
         public string AreaInfo { get; set; }
         public string Address { get; set; }
