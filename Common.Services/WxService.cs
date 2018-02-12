@@ -153,6 +153,9 @@ namespace Common.Services
                     db.SaveChanges();
                     //dbitem = db.UserAuths.FirstOrDefault(t => t.IdentityType == "wx" && t.Identifier == openid);
 
+                    var patientuid = db.Set<Patient>().First(t => t.UserID == dbitem.User.Id).Uid;
+
+
                     UserDto userdto = new UserDto
                     {
                         //id = dbitem.User.ID,
@@ -162,7 +165,7 @@ namespace Common.Services
                         //isagentvalid = dbitem.User.Agent.IsValid,
                         isvalid = dbitem.User.IsValid,
                         isverified = dbitem.User.UserProfile.IsVerified,
-                        patientuid= db.Set<Patient>().First(t=>t.User== dbitem.User).Uid
+                        patientuid= patientuid
                     };
 
                     if (dbitem.User.UserProfile.NickName != wxuser.userinfo["nickName"].ToString())
@@ -195,6 +198,50 @@ namespace Common.Services
             {
                 return null;
             }
+        }
+
+
+        public string SaveUserProfile(UserProfileDto userpfdto)
+        {
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var user = db.Set<User>().FirstOrDefault(u => u.AuthID == userpfdto.authid);
+
+                    if (user != null)
+                    {
+                        var userpf = user.UserProfile;
+
+                        if (!(userpf.IsVerified ?? false))
+                        {
+                            userpf.RealName = userpfdto.realname;
+                            userpf.Gender = userpfdto.gender;
+                            userpf.Address = userpfdto.address;
+                            userpf.IDCard = userpfdto.idcard;
+                            userpf.MobilePhone = userpfdto.mobilephone;
+
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            return "已经验证，不可修改";
+                        }
+
+
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return "未找到对应用户";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return "保存失败";
+            }
+
         }
 
     }

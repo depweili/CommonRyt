@@ -50,6 +50,10 @@ namespace Common.Services.Dtos
 
         public string idcard { get; set; }
 
+        public string birthday { get; set; }
+
+        public string area { get; set; }
+
         public string address { get; set; }
 
         public bool isverified { get; set; }

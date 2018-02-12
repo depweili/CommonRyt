@@ -120,7 +120,7 @@ namespace Common.Web.ApiControllers
         /// <param name="doctoruid"></param>
         /// <returns></returns>
         [Route("api/BindingDoctor")]
-        [HttpGet]
+        [HttpPost]
         public IHttpActionResult BindingDoctor(Guid patientuid, Guid doctoruid)
         {
             var res = new ResponseBase();
@@ -145,35 +145,8 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
-        /// <summary>
-        /// 保存患者信息
-        /// </summary>
-        /// <param name="patientuid"></param>
-        /// <param name="patient"></param>
-        /// <returns></returns>
-        public IHttpActionResult SavePatient(Guid patientuid, PatientDto patient)
-        {
-            var res = new ResponseBase();
-            try
-            {
-                var service = new RytService();
-                var data = service.SavePatient(patientuid, patient);
-
-                if (!string.IsNullOrEmpty(data))
-                {
-                    res.code = "100";
-                    res.msg = data;
-                }
-
-                res.resData = null;
-            }
-            catch (Exception ex)
-            {
-                res.code = "100";
-                res.msg = ex.Message;
-            }
-            return Ok(res);
-        }
+        
+        
 
         /// <summary>
         /// 患者的医生
@@ -184,6 +157,24 @@ namespace Common.Web.ApiControllers
         [Route("api/MyDoctors")]
         [HttpGet]
         public IHttpActionResult GetPatientDoctors(Guid patientuid, string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.GetPatientDoctors(patientuid, queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        public IHttpActionResult GetPatientInfo(Guid patientuid, string queryJson = "")
         {
             var res = new ResponseBase();
             try

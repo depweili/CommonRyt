@@ -1,4 +1,5 @@
 ﻿using Common.Services;
+using Common.Services.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,38 @@ namespace Common.Web.ApiControllers
             }
             return Ok(res);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userpfdto"></param>
+        /// <returns></returns>
+        [Route("api/UserProfile/Edit")]
+        [HttpPost]
+        public IHttpActionResult SaveUserProfile(UserProfileDto userpfdto)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new WxService();
+                var data = service.SaveUserProfile(userpfdto);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
         /// <summary>
         /// 导航信息
         /// </summary>
