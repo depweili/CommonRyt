@@ -1,4 +1,5 @@
 ﻿using Common.Services;
+using Common.Services.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,7 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 获取医生
+        /// 获取医生列表
         /// </summary>
         /// <returns></returns>
         [Route("api/Doctors")]
@@ -87,18 +88,46 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 绑定医生
+        /// 医生详情
         /// </summary>
-        /// <param name="puid"></param>
-        /// <param name="duid"></param>
+        /// <param name="queryJson"></param>
         /// <returns></returns>
-        public IHttpActionResult BindingDoctor(Guid puid, Guid duid)
+        [Route("api/Doctor")]
+        [HttpGet]
+        public IHttpActionResult GetDoctor(string queryJson = "")
         {
             var res = new ResponseBase();
             try
             {
                 var service = new RytService();
-                var data = service.BindingDoctor(puid, duid);
+                var data = service.GetDoctor(queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 绑定医生
+        /// </summary>
+        /// <param name="patientuid"></param>
+        /// <param name="doctoruid"></param>
+        /// <returns></returns>
+        [Route("api/BindingDoctor")]
+        [HttpGet]
+        public IHttpActionResult BindingDoctor(Guid patientuid, Guid doctoruid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.BindingDoctor(patientuid, doctoruid);
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -116,13 +145,19 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
-        public IHttpActionResult SavePatient(Guid puid, Guid duid)
+        /// <summary>
+        /// 保存患者信息
+        /// </summary>
+        /// <param name="patientuid"></param>
+        /// <param name="patient"></param>
+        /// <returns></returns>
+        public IHttpActionResult SavePatient(Guid patientuid, PatientDto patient)
         {
             var res = new ResponseBase();
             try
             {
                 var service = new RytService();
-                var data = service.BindingDoctor(puid, duid);
+                var data = service.SavePatient(patientuid, patient);
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -131,6 +166,32 @@ namespace Common.Web.ApiControllers
                 }
 
                 res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 患者的医生
+        /// </summary>
+        /// <param name="patientuid"></param>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [Route("api/MyDoctors")]
+        [HttpGet]
+        public IHttpActionResult GetPatientDoctors(Guid patientuid, string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.GetPatientDoctors(patientuid, queryJson);
+
+                res.resData = data;
             }
             catch (Exception ex)
             {

@@ -8,6 +8,15 @@ using System.Threading.Tasks;
 namespace Common.Domain.Mappings
 {
 
+    public class BaseAreaMap : EntityTypeConfiguration<BaseArea>
+    {
+        public BaseAreaMap()
+        {
+            this.Property(t => t.Area).HasMaxLength(100);
+            this.Property(t => t.Name).HasMaxLength(50);
+        }
+    }
+
     public class ArticleMap : EntityTypeConfiguration<Article>
     {
         public ArticleMap()

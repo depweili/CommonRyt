@@ -3,6 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Common.Services;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using Common.Domain;
+using System.Linq;
 
 namespace Common.Web.Tests
 {
@@ -57,6 +60,54 @@ namespace Common.Web.Tests
             var sss=ws.GetUser(res);
 
             Console.WriteLine("123");
+        }
+
+
+        [TestMethod]
+        public void TestTreeQuery()
+        {
+            //var data1 = GetSonID(110000).ToList();
+            var data = GetSon(110000).ToList();
+
+            var ss = data.Select(t=>t.Id.ToString()).Aggregate((x, y) => x + "," + y);
+
+            var dd = data.Select(t => t.Id.ToString()).ToArray();
+
+            int num = data.Count();
+        }
+
+        public IEnumerable<BaseArea> GetSonID(int p_id)
+        {
+            using (var db = new CommonContext())
+            {
+                db.Database.Log = Console.WriteLine;
+                var query = from c in db.Set<BaseArea>()
+                            where c.Pid == p_id
+                            select c;
+
+                return query.ToList().Concat(query.ToList().SelectMany(t => GetSonID(t.Id)));
+            }
+        }
+
+        public IEnumerable<BaseArea> GetSon(int p_id)
+        {
+            using (var db = new CommonContext())
+            {
+                db.Database.Log = Console.WriteLine;
+
+                var data = db.Database.SqlQuery<BaseArea>($@"WITH temp
+AS
+(
+SELECT * FROM Ryt_BaseArea  WHERE ID = {p_id}
+UNION ALL
+SELECT m.* FROM Ryt_BaseArea  AS m
+INNER JOIN temp AS child ON m.PID = child.ID
+)
+SELECT * FROM temp");
+
+                return data.ToList();
+
+            }
         }
     }
 }

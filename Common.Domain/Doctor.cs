@@ -19,6 +19,8 @@ namespace Common.Domain
 
         public string Address { get; set; }
 
+
+        public int? AreaID { get; set; }
         public BaseArea Area { get; set; }
 
         public virtual ICollection<MedicineDepartment> MedicineDepartments { get; set; }

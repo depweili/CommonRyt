@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,24 +9,21 @@ using System.Threading.Tasks;
 namespace Common.Domain
 {
 
-    public class BaseArea : EntityBase<int>
+    public class BaseArea
     {
+        [Key]
+        [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
+        public int Id { get; set; }
+
         public int? Pid { get; set; }
 
-        public int Type { get; set; }
+        public int? Level { get; set; }
+
+        public int? Type { get; set; }
 
         public string Name { get; set; }
 
-        public int Level { get; set; }
-
-        public string Code { get; set; }
-
-        public string PCode { get; set; }
-
         public string Area { get; set; }
-
-        //public string ZipCode { get; set; }
-        //public string TelCode { get; set; }
     }
 
 

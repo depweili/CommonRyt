@@ -234,6 +234,19 @@ namespace Common.Util
         {
             return data == null ? string.Empty : data.ToString().Trim();
         }
+
+        public static Guid ToGuid(this string data)
+        {
+            Guid gv;
+
+            if (Guid.TryParse(data, out gv))
+            {
+                return gv;
+            }
+
+            return default(Guid);
+        }
+
         #endregion
     }
 }

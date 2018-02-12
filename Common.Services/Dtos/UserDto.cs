@@ -31,6 +31,8 @@ namespace Common.Services.Dtos
         public bool? isvalid { get; set; }
 
         public bool? isverified { get; set; }
+
+        public Guid patientuid { get; set; }
     }
 
 

@@ -161,7 +161,8 @@ namespace Common.Services
                         //agentcode = dbitem.User.Agent.Code, 
                         //isagentvalid = dbitem.User.Agent.IsValid,
                         isvalid = dbitem.User.IsValid,
-                        isverified = dbitem.User.UserProfile.IsVerified
+                        isverified = dbitem.User.UserProfile.IsVerified,
+                        patientuid= db.Set<Patient>().First(t=>t.User== dbitem.User).Uid
                     };
 
                     if (dbitem.User.UserProfile.NickName != wxuser.userinfo["nickName"].ToString())

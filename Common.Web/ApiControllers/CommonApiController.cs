@@ -68,7 +68,10 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
-
+        /// <summary>
+        /// 全国2级区域
+        /// </summary>
+        /// <returns></returns>
         [Route("api/Area")]
         [HttpGet]
         public IHttpActionResult GetAreas()
@@ -77,9 +80,9 @@ namespace Common.Web.ApiControllers
             try
             {
                 var service = new CommonService();
-                //var data = service.GetAreas();
+                var data = service.GetAreaTree();
 
-                //res.resData = data;
+                res.resData = data;
             }
             catch (Exception ex)
             {

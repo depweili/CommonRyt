@@ -1,6 +1,7 @@
 ﻿using Common.Util;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,6 +77,38 @@ namespace Common.Services
             return imgPath;
         }
 
+        public static bool IsInTreeBySql(DbContext db, int cid, int tid, string table, string key = "ID", string pkey = "PID")
+        {
+            var supsql = string.Format(@"WITH temp AS
+                                        (
+                                        SELECT {0} FROM {1}  WHERE {0} = {3}
+                                        UNION ALL
+                                        SELECT d.{0} FROM {1} AS d
+                                        INNER JOIN temp ON d.{2} = temp.{0}
+                                        )
+                                        SELECT * FROM temp", key, table, pkey, cid);
+
+            var list = db.Database.SqlQuery<int>(supsql);
+
+            return list.ToList().Contains(tid);
+        }
+
+
+        public static List<T> GetColumnListByTree<T>(DbContext db, string cid,string table, string key = "ID", string pkey = "PID")
+        {
+            var supsql = string.Format(@"WITH temp AS
+                                        (
+                                        SELECT {0} FROM {1}  WHERE {0} = {3}
+                                        UNION ALL
+                                        SELECT d.{0} FROM {1} AS d
+                                        INNER JOIN temp ON d.{2} = temp.{0}
+                                        )
+                                        SELECT * FROM temp", key, table, pkey, cid);
+
+            var list = db.Database.SqlQuery<T>(supsql);
+
+            return list.ToList();
+        }
 
     }
 }

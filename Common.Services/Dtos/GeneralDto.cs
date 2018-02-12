@@ -6,6 +6,27 @@ using System.Threading.Tasks;
 
 namespace Common.Services.Dtos
 {
+
+    public class BaseAreaDto : DtoBase<int>
+    {
+        public int? Pid { get; set; }
+
+        public int Type { get; set; }
+
+        public string Name { get; set; }
+
+        public int Level { get; set; }
+
+        public string Code { get; set; }
+
+        public string PCode { get; set; }
+
+        public string Area { get; set; }
+    }
+
+    
+
+
     public class ArticleDto
     {
         public Guid ArticleUID { get; set; }

@@ -117,6 +117,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common.Domain\Common.Domain.csproj">
+      <Project>{72878be8-3e32-4495-bd6d-b094d542aeed}</Project>
+      <Name>Common.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Services\Common.Services.csproj">
       <Project>{c1c39a68-e712-421a-a397-1b14798a5383}</Project>
       <Name>Common.Services</Name>
