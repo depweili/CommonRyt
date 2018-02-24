@@ -1,5 +1,6 @@
 ﻿using Common.Services;
 using Common.Services.Dtos;
+using Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,13 +69,14 @@ namespace Common.Web.ApiControllers
         /// <returns></returns>
         [Route("api/Doctors")]
         [HttpGet]
-        public IHttpActionResult GetDoctors(string queryJson = "")
+        public IHttpActionResult GetDoctors(string patientuid="",string queryJson = "")
         {
             var res = new ResponseBase();
             try
             {
                 var service = new RytService();
-                var data = service.GetDoctors(queryJson);
+                Guid patuid = patientuid.ToGuid();
+                var data = service.GetDoctors(patuid, queryJson);
 
                 res.resData = data;
             }
@@ -173,6 +175,7 @@ namespace Common.Web.ApiControllers
             }
             return Ok(res);
         }
+
 
         public IHttpActionResult GetPatientInfo(Guid patientuid, string queryJson = "")
         {

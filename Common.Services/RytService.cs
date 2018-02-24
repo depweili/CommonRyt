@@ -125,7 +125,7 @@ namespace Common.Services
         }
 
 
-        public dynamic GetDoctors(string queryJson)
+        public dynamic GetDoctors(Guid PatientUid,string queryJson)
         {
             using (var db = base.NewDB())
             {
@@ -188,22 +188,74 @@ namespace Common.Services
 
                 /////////////////////////////////////////////
 
-                var query = db.Set<Doctor>().Where(expression).Select(t => new
-                {
-                    Name = t.Name,
-                    Uid = t.Uid,
-                    Avatar = t.Avatar,
-                    DepartmentAlias = t.DepartmentAlias,
-                    EduTitle = t.EduTitle,
-                    Expert = t.Expert,
-                    IsValid = t.IsValid,
-                    Title = t.Title,
-                    HospitalName = t.MedicineDepartment.Hospital.Name,
-                    MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
-                    IsVerified = t.IsVerified
-                }).OrderBy(t => t.Name);
+                //var query = db.Set<Doctor>().Where(expression).Select(t => new
+                //{
+                //    Name = t.Name,
+                //    Uid = t.Uid,
+                //    Avatar = t.Avatar,
+                //    DepartmentAlias = t.DepartmentAlias,
+                //    EduTitle = t.EduTitle,
+                //    Expert = t.Expert,
+                //    IsValid = t.IsValid,
+                //    Title = t.Title,
+                //    HospitalName = t.MedicineDepartment.Hospital.Name,
+                //    MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
+                //    IsVerified = t.IsVerified
+                //}).OrderBy(t => t.Name);
 
-                var list = GetPageData(query, queryParam);
+
+                //var query = db.Set<Doctor>().Where(expression).Join(db.Set<PatientDoctor>().Where(t=>t.Patient.Uid == PatientUid), a => a.Id, b => b.DoctorID, (a, b) => new { a, b }).DefaultIfEmpty().Select(t => new
+                //{
+                //    Name = t.a.Name,
+                //    Uid = t.a.Uid,
+                //    Avatar = t.a.Avatar,
+                //    DepartmentAlias = t.a.DepartmentAlias,
+                //    EduTitle = t.a.EduTitle,
+                //    Expert = t.a.Expert,
+                //    IsValid = t.a.IsValid,
+                //    Title = t.a.Title,
+                //    HospitalName = t.a.MedicineDepartment.Hospital.Name,
+                //    MedicineCategoryName = t.a.MedicineDepartment.MedicineCategory.Name,
+                //    IsVerified = t.a.IsVerified,
+                //    IsConnect = t.b.PatientID.HasValue
+                //}).OrderBy(t => t.Name);
+
+                //var query = db.Set<Doctor>().Join(db.Set<PatientDoctor>(), a => a.Id, b => b.DoctorID, (a, b) => new { a, b }).Where(t=>t.b.Patient.Uid == PatientUid).DefaultIfEmpty().Select(t => new
+                //{
+                //    Name = t.a.Name,
+                //    Uid = t.a.Uid,
+                //    Avatar = t.a.Avatar,
+                //    DepartmentAlias = t.a.DepartmentAlias,
+                //    EduTitle = t.a.EduTitle,
+                //    Expert = t.a.Expert,
+                //    IsValid = t.a.IsValid,
+                //    Title = t.a.Title,
+                //    HospitalName = t.a.MedicineDepartment.Hospital.Name,
+                //    MedicineCategoryName = t.a.MedicineDepartment.MedicineCategory.Name,
+                //    IsVerified = t.a.IsVerified,
+                //    IsConnect = t.b.PatientID.HasValue
+                //}).OrderBy(t => t.Name);
+
+                var query = from t in db.Set<Doctor>()
+                            join b in db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid) on t.Id equals b.DoctorID into temp
+                            from c in temp.DefaultIfEmpty()
+                            select new {
+                                Name = t.Name,
+                                Uid = t.Uid,
+                                Avatar = t.Avatar,
+                                DepartmentAlias = t.DepartmentAlias,
+                                EduTitle = t.EduTitle,
+                                Expert = t.Expert,
+                                IsValid = t.IsValid,
+                                Title = t.Title,
+                                HospitalName = t.MedicineDepartment.Hospital.Name,
+                                MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
+                                IsVerified = t.IsVerified,
+                                IsConnect = c.PatientID.HasValue
+                            };
+
+
+                var list = GetPageData(query.OrderBy(t=>t.Name), queryParam);
 
                 var res = list.ToList();
                 ////////////////////////////////////////////
