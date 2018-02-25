@@ -15,5 +15,7 @@ namespace Common.Services.Dtos
         public TKey Id { get; set; }
         
         public bool? IsValid { get; set; }
+
+        public DateTime? CreateTime { get; set; }
     }
 }

@@ -45,7 +45,7 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 
+        /// 保存用户信息
         /// </summary>
         /// <param name="userpfdto"></param>
         /// <returns></returns>
@@ -66,6 +66,35 @@ namespace Common.Web.ApiControllers
                 }
 
                 res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 获取用户明细信息
+        /// </summary>
+        /// <param name="authid"></param>
+        /// <returns></returns>
+        [Route("api/UserProfile/{authid}")]
+        [HttpGet]
+        public IHttpActionResult GetUserProfile(Guid authid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new WxService();
+                var data = service.GetUserProfile(authid);
+                if (data == null)
+                {
+                    throw new Exception("未找到用户明细信息");
+                }
+
+                res.resData = data;
             }
             catch (Exception ex)
             {

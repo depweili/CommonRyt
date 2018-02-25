@@ -47,7 +47,11 @@ namespace Common.Domain
 
         public int? Age { get; set; }
 
+        public DateTime? BirthDay { get; set; }
+
         public string Email { get; set; }
+
+        public string Area { get; set; }
 
         public string Address { get; set; }
 

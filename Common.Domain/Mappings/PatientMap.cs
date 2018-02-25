@@ -41,4 +41,21 @@ namespace Common.Domain.Mappings
         }
     }
 
+    public class CharityDrugApplicationMap : EntityTypeConfiguration<CharityDrugApplication>
+    {
+        public CharityDrugApplicationMap()
+        {
+            this.Property(t => t.Address).HasMaxLength(100);
+            this.Property(t => t.Area).HasMaxLength(100);
+            this.Property(t => t.Chemotherapy).HasMaxLength(100);
+            this.Property(t => t.DrugName).HasMaxLength(100);
+            this.Property(t => t.EmergencyContact).HasMaxLength(100);
+            this.Property(t => t.EmergencyPhone).HasMaxLength(100);
+            this.Property(t => t.IDCard).HasMaxLength(100);
+            this.Property(t => t.MedicalRecordNo).HasMaxLength(100);
+            this.Property(t => t.PatientName).HasMaxLength(100);
+            this.Property(t => t.MobilePhone).HasMaxLength(100);
+        }
+    }
+
 }

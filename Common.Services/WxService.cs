@@ -220,6 +220,7 @@ namespace Common.Services
                             userpf.Address = userpfdto.address;
                             userpf.IDCard = userpfdto.idcard;
                             userpf.MobilePhone = userpfdto.mobilephone;
+                            userpf.BirthDay = userpfdto.birthday;
 
                             db.SaveChanges();
                         }
@@ -242,6 +243,39 @@ namespace Common.Services
                 return "保存失败";
             }
 
+        }
+
+        public UserProfileDto GetUserProfile(Guid authid)
+        {
+            using (var db = base.NewDB())
+            {
+                var user = db.Set<User>().FirstOrDefault(u => u.AuthID == authid && u.IsValid == true);
+
+                if (user != null)
+                {
+                    var userpf = user.UserProfile;
+
+                    UserProfileDto userpfdto = new UserProfileDto
+                    {
+                        authid = authid,
+                        nickname = userpf.NickName,
+                        realname = userpf.RealName,
+                        gender = userpf.Gender,
+                        address = userpf.Address,
+                        idcard = userpf.IDCard,
+                        mobilephone = userpf.MobilePhone,
+                        isverified = userpf.IsVerified ?? false,
+                        birthday = userpf.BirthDay,
+                        area = userpf.Area
+                    };
+
+                    return userpfdto;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
     }

@@ -288,6 +288,8 @@ namespace Common.Services
             }
         }
 
+        
+
         public dynamic SavePatient(Guid puid, PatientDto patient)
         {
             throw new NotImplementedException();
@@ -338,5 +340,166 @@ namespace Common.Services
                 return res.ToList();
             }
         }
+
+        public string SaveCharityDrugApplication(CharityDrugApplicationDto charitydrugdto)
+        {
+            string res = string.Empty;
+            try
+            {
+                CharityDrugApplication charityDrug = null;
+                using (var db = base.NewDB())
+                {
+                    if (charitydrugdto.StrCharityDrugUid.IsEmpty())
+                    {
+                        charityDrug = new CharityDrugApplication();
+
+                        charityDrug = charitydrugdto.MapTo(charityDrug);
+
+                        charityDrug.Patient = db.Set<Patient>().Single(t => t.Uid == charitydrugdto.PatientUid);
+
+                        if (charityDrug.Patient != null)
+                        {
+                            db.Set<CharityDrugApplication>().Add(charityDrug);
+                        }
+                        else
+                        {
+                            res = "非法用户";
+                        }
+                        
+                    }
+                    else
+                    {
+                        var uid = charitydrugdto.StrCharityDrugUid.ToGuid();
+
+                        charityDrug = db.Set<CharityDrugApplication>().Single(t => t.CharityDrugUid == uid);
+
+                        charityDrug = charitydrugdto.MapTo(charityDrug);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                res = ex.Message;
+            }
+
+            return res;
+        }
+
+        public dynamic GetCharityDrugApplication(Guid uid)
+        {
+            using (var db = base.NewDB())
+            {
+                CharityDrugApplicationDto res = null;
+                var dbitem = db.Set<CharityDrugApplication>().FirstOrDefault(t => t.CharityDrugUid == uid);
+
+                res = dbitem.MapTo<CharityDrugApplicationDto>();
+                return res;
+            }
+        }
+
+        public dynamic GetCharityDrugApplications(string queryJson = "",Guid patientuid=default(Guid))
+        {
+            using (var db = base.NewDB())
+            {
+                IEnumerable<CharityDrugApplication> dblist = null;
+
+                var expression = LinqExtensions.True<CharityDrugApplication>();
+                var queryParam = queryJson.ToJObject(); 
+
+                if(patientuid!= default(Guid))
+                {
+                    expression = expression.And(t => t.Patient.Uid == patientuid);
+                }
+
+                //if (!queryParam["areaid"].IsEmpty() && queryParam["areaid"].ToString() != "-1")
+                //{
+                //    string keyword = queryParam["areaid"].ToString();
+
+                //    var inlist = Function.GetColumnListByTree<int>(db, keyword, "Ryt_BaseArea");
+                //    expression = expression.And(t => inlist.Contains(t.MedicineDepartment.Hospital.AreaID ?? 0));
+                //}
+
+                //if (!queryParam["hospitalid"].IsEmpty() && queryParam["hospitalid"].ToString() != "-1")
+                //{
+                //    int keyword = queryParam["hospitalid"].ToInt();
+                //    expression = expression.And(t => t.MedicineDepartment.HospitalID == keyword);
+                //}
+
+                //if (!queryParam["medicinecategoryid"].IsEmpty() && queryParam["medicinecategoryid"].ToString() != "-1")
+                //{
+                //    int keyword = queryParam["medicinecategoryid"].ToInt();
+                //    expression = expression.And(t => t.MedicineDepartment.MedicineCategoryID == keyword);
+                //}
+
+                var query = db.Set<CharityDrugApplication>().Where(expression).OrderByDescending(t => t.CreateTime);
+                
+                var list = GetPageData(query, queryParam);
+
+                var res = list.MapToList<CharityDrugApplicationDto>();
+
+                return res;
+            }
+        }
+
+        public dynamic GetPatientMedicalRecord(Guid patientuid)
+        {
+            using (var db = base.NewDB())
+            {
+                PatientMedicalRecordDto res = null;
+                var dbitem = db.Set<PatientMedicalRecord>().FirstOrDefault(t => t.Patient.Uid == patientuid);
+
+                res = dbitem.MapTo<PatientMedicalRecordDto>();
+                return res;
+            }
+        }
+
+        public dynamic SavePatientMedicalRecord(PatientMedicalRecordDto dto)
+        {
+            string res = string.Empty;
+            try
+            {
+                PatientMedicalRecord dbitem = null;
+                using (var db = base.NewDB())
+                {
+                    if (dto.PatientUid.IsEmpty())
+                    {
+                        dbitem = new PatientMedicalRecord();
+
+                        dbitem = dto.MapTo(dbitem);
+
+                        dbitem.Patient = db.Set<Patient>().Single(t => t.Uid == dto.PatientUid);
+
+                        if (dbitem.Patient != null)
+                        {
+                            db.Set<PatientMedicalRecord>().Add(dbitem);
+                        }
+                        else
+                        {
+                            res = "非法用户";
+                        }
+
+                    }
+                    else
+                    {
+                        var uid = dto.PatientUid;//dto.PatientUid.ToGuid();
+
+                        dbitem = db.Set<PatientMedicalRecord>().Single(t => t.Patient.Uid == uid);
+
+                        dbitem = dto.MapTo(dbitem);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                res = ex.Message;
+            }
+
+            return res;
+        }
+
     }
 }

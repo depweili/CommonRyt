@@ -16,8 +16,8 @@ namespace Common.Domain
             : base("CommonContext")
         {
             //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<CommonContext>()); RytDbContextInitializer
-            Database.SetInitializer(new RytDbContextInitializer());
-            //Database.SetInitializer<CommonContext>(null);
+            //Database.SetInitializer(new RytDbContextInitializer());
+            Database.SetInitializer<CommonContext>(null);
 
             //this.Configuration.ProxyCreationEnabled = false;
             // 禁用延迟加载

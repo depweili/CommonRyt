@@ -16,6 +16,13 @@ namespace Common.Services
             return Mapper.Map<T>(obj);
         }
 
+        public static TDestination MapTo<TSource, TDestination>(this TSource self, TDestination result)
+        {
+            if (self == null) return result;
+            return Mapper.Map<TSource, TDestination>(self, result);
+
+        }
+
         /// <summary>
         /// 集合列表类型映射
         /// </summary>

@@ -10,6 +10,9 @@ using System.Web.Http;
 
 namespace Common.Web.ApiControllers
 {
+    /// <summary>
+    /// ryt
+    /// </summary>
     public class RytApiController : ApiControllerBase
     {
         /// <summary>
@@ -146,8 +149,6 @@ namespace Common.Web.ApiControllers
             }
             return Ok(res);
         }
-
-        
         
 
         /// <summary>
@@ -175,17 +176,133 @@ namespace Common.Web.ApiControllers
             }
             return Ok(res);
         }
+        
 
-
-        public IHttpActionResult GetPatientInfo(Guid patientuid, string queryJson = "")
+        /// <summary>
+        /// 保存慈善赠药
+        /// </summary>
+        /// <param name="userpfdto"></param>
+        /// <returns></returns>
+        [Route("api/CharityDrug/Save")]
+        [HttpPost]
+        public IHttpActionResult SaveCharityDrugApplication(CharityDrugApplicationDto charitydrugdto)
         {
             var res = new ResponseBase();
             try
             {
                 var service = new RytService();
-                var data = service.GetPatientDoctors(patientuid, queryJson);
+                var data = service.SaveCharityDrugApplication(charitydrugdto);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 获取慈善赠药明细信息
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        [Route("api/CharityDrug/{uid}")]
+        [HttpGet]
+        public IHttpActionResult GetCharityDrugApplication(Guid uid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.GetCharityDrugApplication(uid);
+                if (data == null)
+                {
+                    throw new Exception("未找到申请信息");
+                }
 
                 res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 获取慈善赠药列表信息
+        /// </summary>
+        /// <param name="patientuid"></param>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [Route("api/CharityDrugApplications")]
+        [HttpGet]
+        public IHttpActionResult GetCharityDrugApplications(Guid patientuid, string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.GetCharityDrugApplications(queryJson, patientuid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+
+
+        [Route("api/PatientMedicalRecord/{patientuid}")]
+        [HttpPost]
+        public IHttpActionResult GetPatientMedicalRecord(Guid patientuid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.GetPatientMedicalRecord(patientuid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        [Route("api/PatientMedicalRecord/Save")]
+        [HttpPost]
+        public IHttpActionResult SavePatientMedicalRecord(PatientMedicalRecordDto medicalrecorddto)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.SavePatientMedicalRecord(medicalrecorddto);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+
+                res.resData = null;
             }
             catch (Exception ex)
             {

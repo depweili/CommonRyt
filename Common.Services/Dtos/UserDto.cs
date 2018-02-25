@@ -46,7 +46,7 @@ namespace Common.Services.Dtos
 
         public int? gender { get; set; }
 
-        public DateTime birthday { get; set; }
+        public DateTime? birthday { get; set; }
 
         public string mobilephone { get; set; }
 

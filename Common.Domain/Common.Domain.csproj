@@ -60,6 +60,15 @@
     <Compile Include="Mappings\IntegralMap.cs" />
     <Compile Include="Mappings\PatientMap.cs" />
     <Compile Include="Mappings\UserMap.cs" />
+    <Compile Include="Migrations\201802110658266_InitialCreate.cs" />
+    <Compile Include="Migrations\201802110658266_InitialCreate.Designer.cs">
+      <DependentUpon>201802110658266_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802250953571_t01.cs" />
+    <Compile Include="Migrations\201802250953571_t01.Designer.cs">
+      <DependentUpon>201802250953571_t01.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="RytDbContextInitializer.cs" />
     <Compile Include="User.cs" />
@@ -75,6 +84,14 @@
       <Project>{0d6d71cf-bc31-4665-b5bc-a5719cdeda44}</Project>
       <Name>Common.Util</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201802110658266_InitialCreate.resx">
+      <DependentUpon>201802110658266_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802250953571_t01.resx">
+      <DependentUpon>201802250953571_t01.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

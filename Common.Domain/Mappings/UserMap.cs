@@ -28,6 +28,7 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Address).HasMaxLength(50);
             this.Property(t => t.MobilePhone).HasMaxLength(50);
             this.Property(t => t.AvatarUrl).HasMaxLength(200);
+            this.Property(t => t.Area).HasMaxLength(200);
 
             this.HasRequired(t => t.User)
                 .WithRequiredDependent(t => t.UserProfile);
