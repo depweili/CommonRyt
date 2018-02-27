@@ -12,6 +12,7 @@ namespace Common.Services
     public static class Function
     {
         public static Random random = new Random();
+        
 
         public static string GetHostAndApp()
         {
@@ -41,6 +42,21 @@ namespace Common.Services
                 return null;
             }
 
+        }
+
+        public static string GetDicDesc(string type, int value)
+        {
+            string res = string.Empty;
+            switch (type)
+            {
+                case "审批":
+                    res = EnumHelper.GetDescription((AuditEnum)value);
+                    break;
+                default:
+                    break;
+
+            }
+            return res;
         }
 
         public static string GetStaticPicUrl(string pic, string subdir = null)

@@ -23,7 +23,9 @@ namespace Common.Services.AutoMapper
                 cfg.CreateMap<Patient, PatientDto>();
 
                 cfg.CreateMap<CharityDrugApplication, CharityDrugApplicationDto>()
-                .ForMember(t => t.StrCharityDrugUid, opt => opt.MapFrom(src=>src.CharityDrugUid.ToString()));
+                .ForMember(t => t.StrCharityDrugUid, opt => opt.MapFrom(src=>src.CharityDrugUid.ToString()))
+                .ForMember(t => t.StateName, opt => opt.MapFrom(src => Function.GetDicDesc("审批",src.State)))
+                .ForMember(t => t.ProjectDoctorName, opt => opt.MapFrom(src => src.ProjectDoctor.Name));
 
                 cfg.CreateMap<CharityDrugApplicationDto, CharityDrugApplication>()
                 .ForMember(t => t.CreateTime, opt => opt.Ignore())

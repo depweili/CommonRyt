@@ -68,6 +68,10 @@
     <Compile Include="Migrations\201802250953571_t01.Designer.cs">
       <DependentUpon>201802250953571_t01.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802271534530_t02.cs" />
+    <Compile Include="Migrations\201802271534530_t02.Designer.cs">
+      <DependentUpon>201802271534530_t02.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="RytDbContextInitializer.cs" />
@@ -91,6 +95,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802250953571_t01.resx">
       <DependentUpon>201802250953571_t01.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802271534530_t02.resx">
+      <DependentUpon>201802271534530_t02.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

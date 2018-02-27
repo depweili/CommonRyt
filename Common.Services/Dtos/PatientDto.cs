@@ -43,6 +43,12 @@ namespace Common.Services.Dtos
         public DateTime? BeginDrugTime { get; set; }
 
         public int? ProjectDoctorID { get; set; }
+
+        public string ProjectDoctorName { get; set; }
+
+        public int State { get; set; }
+
+        public string StateName { get; set; }
     }
     
 

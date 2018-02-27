@@ -265,9 +265,13 @@ namespace Common.Web.ApiControllers
         }
 
 
-
+        /// <summary>
+        /// 获取病历信息
+        /// </summary>
+        /// <param name="patientuid"></param>
+        /// <returns></returns>
         [Route("api/PatientMedicalRecord/{patientuid}")]
-        [HttpPost]
+        [HttpGet]
         public IHttpActionResult GetPatientMedicalRecord(Guid patientuid)
         {
             var res = new ResponseBase();

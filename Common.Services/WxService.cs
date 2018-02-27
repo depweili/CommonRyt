@@ -221,7 +221,7 @@ namespace Common.Services
                             userpf.IDCard = userpfdto.idcard;
                             userpf.MobilePhone = userpfdto.mobilephone;
                             userpf.BirthDay = userpfdto.birthday;
-
+                            userpf.Area = userpfdto.area;
                             db.SaveChanges();
                         }
                         else

@@ -97,6 +97,8 @@ namespace Common.Domain
 
         public DateTime? BeginDrugTime { get; set; }
 
+        public int State { get; set; }
+
         public int? ProjectDoctorID { get; set; }
         public virtual Doctor ProjectDoctor { get; set; }
     }

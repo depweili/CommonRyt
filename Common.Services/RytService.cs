@@ -167,23 +167,79 @@ namespace Common.Services
                 //    expression = expression.And(t => t.Uid == keyword);
                 //}
 
-                //var query = db.Set<Doctor>().Where(expression).OrderBy(t => t.Name);
 
-                //dblist = GetPageData(query, queryParam);
+                if (PatientUid == default(Guid))
+                {
+                    //var query = db.Set<Doctor>().Where(expression).OrderBy(t => t.Name);
 
-                //var res = dblist.Select(t => new 
-                //{
-                //    Uid=t.Uid,
-                //    Avatar=t.Avatar,
-                //    DepartmentAlias=t.DepartmentAlias,
-                //    EduTitle=t.EduTitle,
-                //    Expert=t.Expert,
-                //    IsValid=t.IsValid,
-                //    Title=t.Title,
-                //    HospitalName = t.MedicineDepartment.Hospital.Name,
-                //    MedicineCategoryName= t.MedicineDepartment.MedicineCategory.Name,
-                //    IsVerified =t.IsVerified
-                //});
+                    //dblist = GetPageData(query, queryParam);
+
+                    //var res = dblist.Select(t => new
+                    //{
+                    //    Name = t.Name,
+                    //    Uid = t.Uid,
+                    //    Avatar = t.Avatar,
+                    //    DepartmentAlias = t.DepartmentAlias,
+                    //    EduTitle = t.EduTitle,
+                    //    Expert = t.Expert,
+                    //    IsValid = t.IsValid,
+                    //    Title = t.Title,
+                    //    HospitalName = t.MedicineDepartment.Hospital.Name,
+                    //    MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
+                    //    IsVerified = t.IsVerified
+                    //});
+
+                    var query = db.Set<Doctor>().Where(expression).Select(t => new
+                    {
+                        Name = t.Name,
+                        Uid = t.Uid,
+                        Avatar = t.Avatar,
+                        DepartmentAlias = t.DepartmentAlias,
+                        EduTitle = t.EduTitle,
+                        Expert = t.Expert,
+                        IsValid = t.IsValid,
+                        Title = t.Title,
+                        HospitalName = t.MedicineDepartment.Hospital.Name,
+                        MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
+                        IsVerified = t.IsVerified
+                    }).OrderBy(t => t.Name);
+
+                    var list = GetPageData(query, queryParam);
+
+                    var res = list.ToList();
+
+                    return res;
+                }
+
+                else
+                {
+                    var query = from t in db.Set<Doctor>()
+                                join b in db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid) on t.Id equals b.DoctorID into temp
+                                from c in temp.DefaultIfEmpty()
+                                select new
+                                {
+                                    Name = t.Name,
+                                    Uid = t.Uid,
+                                    Avatar = t.Avatar,
+                                    DepartmentAlias = t.DepartmentAlias,
+                                    EduTitle = t.EduTitle,
+                                    Expert = t.Expert,
+                                    IsValid = t.IsValid,
+                                    Title = t.Title,
+                                    HospitalName = t.MedicineDepartment.Hospital.Name,
+                                    MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
+                                    IsVerified = t.IsVerified,
+                                    IsConnect = c.PatientID.HasValue
+                                };
+
+
+                    var list = GetPageData(query.OrderBy(t => t.Name), queryParam);
+
+                    var res = list.ToList();
+
+                    return res;
+                }
+                
 
 
                 /////////////////////////////////////////////
@@ -236,28 +292,7 @@ namespace Common.Services
                 //    IsConnect = t.b.PatientID.HasValue
                 //}).OrderBy(t => t.Name);
 
-                var query = from t in db.Set<Doctor>()
-                            join b in db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid) on t.Id equals b.DoctorID into temp
-                            from c in temp.DefaultIfEmpty()
-                            select new {
-                                Name = t.Name,
-                                Uid = t.Uid,
-                                Avatar = t.Avatar,
-                                DepartmentAlias = t.DepartmentAlias,
-                                EduTitle = t.EduTitle,
-                                Expert = t.Expert,
-                                IsValid = t.IsValid,
-                                Title = t.Title,
-                                HospitalName = t.MedicineDepartment.Hospital.Name,
-                                MedicineCategoryName = t.MedicineDepartment.MedicineCategory.Name,
-                                IsVerified = t.IsVerified,
-                                IsConnect = c.PatientID.HasValue
-                            };
-
-
-                var list = GetPageData(query.OrderBy(t=>t.Name), queryParam);
-
-                var res = list.ToList();
+                
                 ////////////////////////////////////////////
 
                 //var query2=query.Select(t => new 
@@ -284,7 +319,7 @@ namespace Common.Services
 
                 //var res = dblist.MapToList<DoctorDto>();
 
-                return res;
+
             }
         }
 
@@ -316,6 +351,7 @@ namespace Common.Services
 
                 var query = db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid).Select(t => new
                 {
+                    Id=t.Doctor.Id,
                     Name = t.Doctor.Name,
                     Uid = t.Doctor.Uid,
                     Avatar = t.Doctor.Avatar,
@@ -463,32 +499,44 @@ namespace Common.Services
                 PatientMedicalRecord dbitem = null;
                 using (var db = base.NewDB())
                 {
-                    if (dto.PatientUid.IsEmpty())
+                    if (!dto.PatientUid.IsEmpty())
                     {
-                        dbitem = new PatientMedicalRecord();
-
-                        dbitem = dto.MapTo(dbitem);
-
-                        dbitem.Patient = db.Set<Patient>().Single(t => t.Uid == dto.PatientUid);
-
-                        if (dbitem.Patient != null)
+                        dbitem = db.Set<PatientMedicalRecord>().FirstOrDefault(t => t.Patient.Uid == dto.PatientUid);
+                        if (dbitem!=null)
                         {
-                            db.Set<PatientMedicalRecord>().Add(dbitem);
+                            dbitem.Content = dto.Content;
                         }
                         else
                         {
-                            res = "非法用户";
+                            dbitem = new PatientMedicalRecord();
+
+                            dbitem = dto.MapTo(dbitem);
+
+                            dbitem.Patient = db.Set<Patient>().FirstOrDefault(t => t.Uid == dto.PatientUid);
+
+                            if (dbitem.Patient != null)
+                            {
+                                db.Set<PatientMedicalRecord>().Add(dbitem);
+                            }
+                            else
+                            {
+                                res = "非法用户";
+                            }
                         }
 
                     }
                     else
                     {
-                        var uid = dto.PatientUid;//dto.PatientUid.ToGuid();
-
-                        dbitem = db.Set<PatientMedicalRecord>().Single(t => t.Patient.Uid == uid);
-
-                        dbitem = dto.MapTo(dbitem);
+                        res = "未知用户";
                     }
+                    //else
+                    //{
+                    //    var uid = dto.PatientUid;//dto.PatientUid.ToGuid();
+
+                    //    dbitem = db.Set<PatientMedicalRecord>().Single(t => t.Patient.Uid == uid);
+
+                    //    dbitem = dto.MapTo(dbitem);
+                    //}
 
                     db.SaveChanges();
                 }

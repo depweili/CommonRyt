@@ -63,6 +63,7 @@
     <Compile Include="AutoMapper\Configuration.cs" />
     <Compile Include="BaseResponse.cs" />
     <Compile Include="CommonService.cs" />
+    <Compile Include="Constant.cs" />
     <Compile Include="Dtos\DoctorDto.cs" />
     <Compile Include="Dtos\DtoBase.cs" />
     <Compile Include="Dtos\GeneralDto.cs" />
