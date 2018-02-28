@@ -77,5 +77,7 @@ namespace Common.Services.Dtos
 
         public decimal Score { get; set; }
 
+        public bool IsConnect { get; set; }
+
     }
 }

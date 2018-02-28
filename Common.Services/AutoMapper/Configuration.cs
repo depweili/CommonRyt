@@ -17,7 +17,8 @@ namespace Common.Services.AutoMapper
             {
                 cfg.CreateMap<Hospital, HospitalDto>();
                 cfg.CreateMap<MedicineCategory, MedicineCategoryDto>();
-                cfg.CreateMap<Doctor, DoctorDto>().ForMember(t => t.HospitalName, opt => opt.MapFrom(src => src.MedicineDepartment.Hospital.Name))
+                cfg.CreateMap<Doctor, DoctorDto>()
+                .ForMember(t => t.HospitalName, opt => opt.MapFrom(src => src.MedicineDepartment.Hospital.Name))
                 .ForMember(t => t.MedicineCategoryName, opt => opt.MapFrom(src => src.MedicineDepartment.MedicineCategory.Name));
 
                 cfg.CreateMap<Patient, PatientDto>();

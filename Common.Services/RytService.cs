@@ -21,19 +21,31 @@ namespace Common.Services
             {
                 using (var db = base.NewDB())
                 {
-                    if (!db.Set<PatientDoctor>().Any(t => t.Patient.Uid == PatientUid && t.Doctor.Uid == DoctorUid))
-                    {
-                        db.Set<PatientDoctor>().Add(new PatientDoctor
-                        {
-                            Patient = db.Set<Patient>().Single(t => t.Uid == PatientUid),
-                            Doctor = db.Set<Doctor>().Single(t => t.Uid == DoctorUid),
-                        });
+                    var dbitem = db.Set<PatientDoctor>().SingleOrDefault(t => t.Patient.Uid == PatientUid && t.Doctor.Uid == DoctorUid);
 
-                        db.SaveChanges();
+                    //if (!db.Set<PatientDoctor>().Any(t => t.Patient.Uid == PatientUid && t.Doctor.Uid == DoctorUid))
+                    if (dbitem != null && dbitem.IsValid == true)
+                    {
+                        res = "您已经绑定此医生";
+
                     }
                     else
                     {
-                        res = "您已经绑定此医生";
+                        if (dbitem == null)
+                        {
+                            db.Set<PatientDoctor>().Add(new PatientDoctor
+                            {
+                                Patient = db.Set<Patient>().Single(t => t.Uid == PatientUid),
+                                Doctor = db.Set<Doctor>().Single(t => t.Uid == DoctorUid),
+                            });
+                        }
+                        else
+                        {
+                            dbitem.IsValid = true;
+                        }
+
+                        db.SaveChanges();
+
                     }
                 }
             }
@@ -42,6 +54,33 @@ namespace Common.Services
                 res = ex.Message;
             }
 
+            return res;
+        }
+
+        public string BindingDoctorCancel(Guid PatientUid, Guid DoctorUid)
+        {
+            string res = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var dbitem = db.Set<PatientDoctor>().SingleOrDefault(t => t.Patient.Uid == PatientUid && t.Doctor.Uid == DoctorUid && t.IsValid == true);
+                    if (dbitem!=null)
+                    {
+                        dbitem.IsValid = false;
+
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        res = "您未绑定此医生";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                res = ex.Message;
+            }
             return res;
         }
 
@@ -94,7 +133,7 @@ namespace Common.Services
             }
         }
 
-        public DoctorDto GetDoctor(string queryJson)
+        public DoctorDto GetDoctor(Guid PatientUid,string queryJson)
         {
             using (var db = base.NewDB())
             {
@@ -118,6 +157,11 @@ namespace Common.Services
                 var query = db.Set<Doctor>().FirstOrDefault(expression);
 
                 res = query.MapTo<DoctorDto>();
+
+                if (PatientUid != default(Guid))
+                {
+                    res.IsConnect = db.Set<PatientDoctor>().Any(t => t.Patient.Uid == PatientUid && t.IsValid == true && t.DoctorID == res.Id);
+                }
 
                 return res;
 
@@ -214,7 +258,7 @@ namespace Common.Services
                 else
                 {
                     var query = from t in db.Set<Doctor>()
-                                join b in db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid) on t.Id equals b.DoctorID into temp
+                                join b in db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid&&t.IsValid==true) on t.Id equals b.DoctorID into temp
                                 from c in temp.DefaultIfEmpty()
                                 select new
                                 {
@@ -349,7 +393,7 @@ namespace Common.Services
                 //var query = db.Set<PatientDoctor>().Where(t=>t.Patient.Uid== PatientUid).OrderByDescending(t => t.CreateTime).Select(t=>t.Doctor);
 
 
-                var query = db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid).Select(t => new
+                var query = db.Set<PatientDoctor>().Where(t => t.Patient.Uid == PatientUid&&t.IsValid==true).Select(t => new
                 {
                     Id=t.Doctor.Id,
                     Name = t.Doctor.Name,
