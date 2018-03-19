@@ -76,6 +76,8 @@ namespace Common.Domain
 
         public string Credential { get; set; }
 
+        public int ErrorNum { get; set; }
+
         public DateTime? LastActiveTime { get; set; }
 
         public virtual User User { get; set; }

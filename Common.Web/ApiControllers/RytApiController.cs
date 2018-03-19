@@ -244,6 +244,37 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
+        /// 删除慈善赠药申请
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        [Route("api/CharityDrug/Del/{uid}")]
+        [HttpPost]
+        public IHttpActionResult DeleteCharityDrugApplication(Guid uid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.DeleteCharityDrugApplication(uid);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
         /// 获取慈善赠药明细信息
         /// </summary>
         /// <param name="uid"></param>
@@ -324,6 +355,11 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
+        /// <summary>
+        /// 保存病情
+        /// </summary>
+        /// <param name="medicalrecorddto"></param>
+        /// <returns></returns>
         [Route("api/PatientMedicalRecord/Save")]
         [HttpPost]
         public IHttpActionResult SavePatientMedicalRecord(PatientMedicalRecordDto medicalrecorddto)

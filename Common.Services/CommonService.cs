@@ -1,6 +1,7 @@
 ﻿using Common.Domain;
 using Common.Services.Dtos;
 using Common.Services.ViewModels;
+using Common.Util.Extesions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,23 +56,71 @@ namespace Common.Services
         {
             using (var db = base.NewDB())
             {
-                var dblist = db.Set<Navigation>().Where(t => t.IsValid == true && t.Type == type).OrderBy(t => t.Order).ToList();
+                var data = db.Set<Navigation>().Where(t => t.IsValid == true && t.Type == type).OrderBy(t => t.Order).ToList();
 
-                var res = new List<NavigationDto>();
-                foreach (var item in dblist)
-                {
-                    res.Add(new NavigationDto
-                    {
-                        //id = item.Id,
-                        //desc = item.Desc,
-                        //picurl = GetPicUrl(item.Pic),
-                        //target = item.Target,
-                        //articleid = item.ArticleID
-                    });
-                }
+                
+
+                var res = data.MapToList<NavigationDto>();
+
+                //var res = new List<NavigationDto>();
+                //foreach (var item in data)
+                //{
+                //    res.Add(new NavigationDto
+                //    {
+                //        //id = item.Id,
+                //        //desc = item.Desc,
+                //        //picurl = GetPicUrl(item.Pic),
+                //        //target = item.Target,
+                //        //articleid = item.ArticleID
+                //    });
+                //}
 
                 return res;
             }
         }
+
+
+        public dynamic GetArticles(string queryJson)
+        {
+            using (var db = base.NewDB())
+            {
+                IEnumerable<ItemInformationDto> dblist = null;
+
+                var expression = LinqExtensions.True<Article>();
+                var queryParam = queryJson.ToJObject();
+
+                expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                //if (!queryParam["areaid"].IsEmpty() && queryParam["areaid"].ToString() != "-1")
+                //{
+                //    string keyword = queryParam["areaid"].ToString();
+
+                //    var inlist = Function.GetColumnListByTree<int>(db, keyword, "Ryt_BaseArea");
+                //    expression = expression.And(t => inlist.Contains(t.MedicineDepartment.Hospital.AreaID ?? 0));
+                //}
+
+                var query = db.Set<Article>().Where(expression).OrderByDescending(t => t.Order).ThenByDescending(t=>t.CreateTime).Select(t => new ItemInformationDto
+                {
+                    Author = t.Author,
+                    Title = t.Title,
+                    ClicksCount = t.ClicksCount,
+                    CommentsCount = t.CommentsCount,
+                    FrontPic = t.FrontPic,
+                    Score = t.Score,
+                    Uid = t.ArticleUID,
+                    Type = "Article",
+                    CreateTime = t.CreateTime
+                });
+
+
+                var list = Function.GetPageData(query, queryParam);
+
+                var res = list.ToList();
+
+                return res;
+            }
+        }
+
+
     }
 }

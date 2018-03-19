@@ -6,6 +6,24 @@ using System.Threading.Tasks;
 
 namespace Common.Services.Dtos
 {
+    public class RegisterDto
+    {
+        public string MobilePhone { get; set; }
+
+        public string PassWord { get; set; }
+
+        public string VerifyCode { get; set; }
+
+        public string InvitationCode { get; set; }
+    }
+
+    public class LoginUserDto : DtoBase<int>
+    {
+        public string MobilePhone { get; set; }
+
+        public string PassWord { get; set; }
+    }
+
 
     public class BaseAreaDto : DtoBase<int>
     {
@@ -24,7 +42,7 @@ namespace Common.Services.Dtos
         public string Area { get; set; }
     }
 
-    
+
 
 
     public class ArticleDto
@@ -48,12 +66,39 @@ namespace Common.Services.Dtos
 
         public string Desc { get; set; }
 
-        public string Pic { get; set; }
+        public string PicUrl { get; set; }
 
         public string Target { get; set; }
 
         public int Order { get; set; }
 
-        public int? ArticleID { get; set; }
+        public string ArticleUID { get; set; }
     }
+
+    public class ItemInformationDto
+    {
+        public Guid Uid { get; set; }
+        public string Type { get; set; }
+
+        public string Target { get; set; }
+
+        public string Title { get; set; }
+
+        public string FrontPic { get; set; }
+
+        public string Author { get; set; }
+
+        public string Summary { get; set; }
+
+        public int ClicksCount { get; set; }
+
+        public int CommentsCount { get; set; }
+
+        public decimal Score { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        
+    }
+
 }

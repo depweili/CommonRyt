@@ -10,10 +10,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Common.Services.Dtos;
+using Common.Domain;
 
 namespace Common.Services
 {
-    public class UtilityService
+    public class UtilityService : ServiceBase
     {
         public byte[] GetImageByEncrypt(string encodeimg, out string mime)
         {
@@ -48,6 +50,164 @@ namespace Common.Services
                 throw ex;
             }
         }
+
+        public dynamic Login(LoginDto login)
+        {
+            try
+            {
+                UserTokenDto userdto = null;
+                string authid = string.Empty;
+                string token = string.Empty;
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<UserAuth>().FirstOrDefault(t => t.IdentityType == "mobile" && t.Identifier == login.MobilePhone);
+
+
+                    if (data != null)
+                    {
+                        if (MD5Encrypt.GetStrMD5(login.PassWord) == data.User.Password)
+                        {
+                            authid = data.User.AuthID.ToString();
+                        }
+                        else
+                        {
+                            data.ErrorNum++;
+                            db.SaveChanges();
+                            throw new Exception("密码错误");
+                        }
+
+                    }
+                    else
+                    {
+                        throw new Exception("用户不存在");
+                    }
+
+                    if (!authid.IsEmpty())
+                    {
+                        data.LastActiveTime = DateTime.Now;
+                        data.ErrorNum = 0;
+                        db.SaveChanges();
+
+                        token = Base64DEncrypt.Base64ForUrlEncode(authid + "#" + DateTime.Now.Ticks.ToString());
+
+                        userdto = new UserTokenDto
+                        {
+                            //id = dbitem.User.ID,
+                            AuthId = authid,
+                            Token = token
+                        };
+                    }
+                }
+                return userdto;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public dynamic RegisterUser(RegisterDto register)
+        {
+            try
+            {
+                UserTokenDto userdto = null;
+                string authid = string.Empty;
+                string token = string.Empty;
+
+                using (var db = base.NewDB())
+                {
+                    if (!register.MobilePhone.IsEmpty() && !register.VerifyCode.IsEmpty() && !register.PassWord.IsEmpty()&& CheckVerifyCode(register.MobilePhone, register.VerifyCode))
+                    {
+                        if (!db.Set<UserAuth>().Any(t => t.IdentityType == "mobile" && t.Identifier == register.MobilePhone))
+                        {
+                            User user = new User();
+
+                            authid = user.AuthID.ToString();
+
+                            user.Password = MD5Encrypt.GetStrMD5(register.PassWord);
+
+                            user = db.Set<User>().Add(user);
+
+                            UserProfile userpf = new UserProfile
+                            {
+                                User = user
+                            };
+                            db.Set<UserProfile>().Add(userpf);
+
+
+                            UserAuth ua = new UserAuth
+                            {
+                                IdentityType = "mobile",
+                                Identifier = register.MobilePhone,
+                                User = user
+                            };
+
+                            db.Set<UserAuth>().Add(ua);
+
+                            UserIntegral ui = new UserIntegral
+                            {
+                                User = user
+                            };
+                            db.Set<UserIntegral>().Add(ui);
+
+                            Doctor d = new Doctor
+                            {
+                                User = user
+                            };
+                            db.Set<Doctor>().Add(d);
+
+                            if (!string.IsNullOrEmpty(register.InvitationCode))
+                            {
+                                //邀请码
+                            }
+
+                            db.SaveChanges();
+                        }
+
+                        //dbitem.LastActiveTime = DateTime.Now;
+
+                        //var auth = db.Set<UserAuth>().FirstOrDefault(t => t.IdentityType == "mobile" && t.Identifier == register.MobilePhone);
+                        if (!authid.IsEmpty())
+                        {
+                            token = authid + "#" + DateTime.Now.Ticks.ToString();
+
+                            userdto = new UserTokenDto
+                            {
+                                //id = dbitem.User.ID,
+                                AuthId = authid,
+                                Token = token
+                            };
+                        }
+
+                        
+
+                        //var signin = db.Set<IntegralSignIn>().FirstOrDefault(t => t.UserIntegral.User.Id == dbitem.User.Id);
+
+                        //if (signin != null && signin.LastTime != null && signin.LastTime.Value.Date == DateTime.Now.Date)
+                        //{
+                        //    userdto.issignin = true;
+                        //}
+                        
+                        
+                    }
+                }
+
+                return userdto;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool CheckVerifyCode(string mobilePhone, string verifyCode)
+        {
+            return true;
+        }
+
+
 
         public byte[] GetGetQrCode(string content)
         {

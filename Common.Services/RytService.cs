@@ -177,7 +177,8 @@ namespace Common.Services
 
                 var expression = LinqExtensions.True<Doctor>();
                 var queryParam = queryJson.ToJObject();
-                
+
+                expression = expression.And(t => (t.IsDeleted??false) == false && (t.IsValid??true) == true);
 
                 if (!queryParam["areaid"].IsEmpty()&& queryParam["areaid"].ToString()!="-1")
                 {
@@ -479,6 +480,35 @@ namespace Common.Services
             }
         }
 
+        public string DeleteCharityDrugApplication(Guid uid)
+        {
+            string res = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    CharityDrugApplication charityDrug = db.Set<CharityDrugApplication>().Single(t=>t.CharityDrugUid== uid);
+
+                    if (charityDrug.State <= 1)
+                    {
+                        charityDrug.IsDeleted = true;
+                        //db.Set<CharityDrugApplication>().Remove(charityDrug);
+                    }
+                    else
+                    {
+                        res = "审核通过无法删除";
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                res = ex.Message;
+            }
+            return res;
+        }
+
         public dynamic GetCharityDrugApplications(string queryJson = "",Guid patientuid=default(Guid))
         {
             using (var db = base.NewDB())
@@ -486,9 +516,11 @@ namespace Common.Services
                 IEnumerable<CharityDrugApplication> dblist = null;
 
                 var expression = LinqExtensions.True<CharityDrugApplication>();
-                var queryParam = queryJson.ToJObject(); 
+                var queryParam = queryJson.ToJObject();
 
-                if(patientuid!= default(Guid))
+                expression = expression.And(t => (t.IsDeleted??false) == false);
+
+                if (patientuid!= default(Guid))
                 {
                     expression = expression.And(t => t.Patient.Uid == patientuid);
                 }

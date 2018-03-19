@@ -29,7 +29,7 @@ namespace Common.Domain.Mappings
     {
         public PatientMedicalRecordMap()
         {
-            this.Property(t => t.Content).HasMaxLength(50);
+            this.Property(t => t.Content).HasColumnType("ntext");
         }
     }
 
@@ -37,7 +37,7 @@ namespace Common.Domain.Mappings
     {
         public ReadPatientRecordMap()
         {
-            this.Property(t => t.Diagnostic).HasMaxLength(50);
+            this.Property(t => t.Diagnostic).HasMaxLength(1000);
         }
     }
 

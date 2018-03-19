@@ -1,4 +1,5 @@
 ﻿using Common.Util;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -124,6 +125,14 @@ namespace Common.Services
             var list = db.Database.SqlQuery<T>(supsql);
 
             return list.ToList();
+        }
+
+        public static IEnumerable<T> GetPageData<T>(IQueryable<T> query, JObject queryParam)
+        {
+            int pageNum = queryParam["pageNum"].IsEmpty() ? 1 : queryParam["pageNum"].ToString().ToInt();
+            int pageSize = queryParam["pageSize"].IsEmpty() ? 20 : queryParam["pageSize"].ToString().ToInt();
+
+            return query.Skip(pageSize * (pageNum - 1)).Take(pageSize);
         }
 
     }

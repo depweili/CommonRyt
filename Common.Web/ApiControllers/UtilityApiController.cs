@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Net.Http.Headers;
 using Common.Util;
 using Common.Services;
+using Common.Services.Dtos;
 
 namespace Common.Web.ApiControllers
 {
@@ -27,6 +28,68 @@ namespace Common.Web.ApiControllers
 
             dynamic res = ws.GetWxUser(code, iv, encryptedData);
 
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 用户注册
+        /// </summary>
+        /// <param name="Register"></param>
+        /// <returns></returns>
+        [Route("api/Register")]
+        [HttpPost]
+        public IHttpActionResult RegisterUser(RegisterDto Register)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                UtilityService ws = new UtilityService();
+
+                dynamic data = ws.RegisterUser(Register);
+
+                if (data == null)
+                {
+                    throw new Exception("注册失败");
+                }
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 登陆
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [Route("api/Login")]
+        [HttpPost]
+        public IHttpActionResult Login(LoginDto login)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                UtilityService ws = new UtilityService();
+
+                dynamic data = ws.Login(login);
+
+                if (data == null)
+                {
+                    throw new Exception("登陆失败");
+                }
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
             return Ok(res);
         }
 

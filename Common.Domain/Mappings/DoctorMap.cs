@@ -53,6 +53,54 @@ namespace Common.Domain.Mappings
         }
     }
 
-    
+
+    public class ConferenceMap : EntityTypeConfiguration<Conference>
+    {
+        public ConferenceMap()
+        {
+            this.Property(t => t.Address).HasMaxLength(200);
+            this.Property(t => t.Content).HasMaxLength(500);
+            this.Property(t => t.Country).HasMaxLength(200);
+            this.Property(t => t.Title).HasMaxLength(100);
+            this.Property(t => t.Memo).HasMaxLength(200);
+            this.Property(t => t.FrontPic).HasMaxLength(200);
+        }
+    }
+
+    public class AttentionMap : EntityTypeConfiguration<Attention>
+    {
+        public AttentionMap()
+        {
+        }
+    }
+
+
+    public class MedicalRecordMap : EntityTypeConfiguration<MedicalRecord>
+    {
+        public MedicalRecordMap()
+        {
+            this.Property(t => t.Content).HasMaxLength(500);
+            this.Property(t => t.Title).HasMaxLength(200);
+            this.Property(t => t.FrontPic).HasMaxLength(200);
+        }
+    }
+
+    public class FundMap : EntityTypeConfiguration<Fund>
+    {
+        public FundMap()
+        {
+            this.Property(t => t.Name).HasMaxLength(200);
+            this.Property(t => t.Introduction).HasMaxLength(500);
+        }
+    }
+
+    public class FundProjectMap : EntityTypeConfiguration<FundProject>
+    {
+        public FundProjectMap()
+        {
+            this.Property(t => t.Name).HasMaxLength(200);
+            this.Property(t => t.Introduction).HasMaxLength(500);
+        }
+    }
 
 }

@@ -52,6 +52,7 @@
     <Compile Include="CommonContext.cs" />
     <Compile Include="DoctorBusiness.cs" />
     <Compile Include="DoctorPatient.cs" />
+    <Compile Include="Fund.cs" />
     <Compile Include="General.cs" />
     <Compile Include="Doctor.cs" />
     <Compile Include="Integral.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Mappings\IntegralMap.cs" />
     <Compile Include="Mappings\PatientMap.cs" />
     <Compile Include="Mappings\UserMap.cs" />
+    <Compile Include="Mappings\VideoMap.cs" />
     <Compile Include="Migrations\201802110658266_InitialCreate.cs" />
     <Compile Include="Migrations\201802110658266_InitialCreate.Designer.cs">
       <DependentUpon>201802110658266_InitialCreate.cs</DependentUpon>
@@ -71,6 +73,14 @@
     <Compile Include="Migrations\201802271534530_t02.cs" />
     <Compile Include="Migrations\201802271534530_t02.Designer.cs">
       <DependentUpon>201802271534530_t02.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803011419446_t03.cs" />
+    <Compile Include="Migrations\201803011419446_t03.Designer.cs">
+      <DependentUpon>201803011419446_t03.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803191425195_t04.cs" />
+    <Compile Include="Migrations\201803191425195_t04.Designer.cs">
+      <DependentUpon>201803191425195_t04.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Patient.cs" />
@@ -98,6 +108,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802271534530_t02.resx">
       <DependentUpon>201802271534530_t02.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803011419446_t03.resx">
+      <DependentUpon>201803011419446_t03.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803191425195_t04.resx">
+      <DependentUpon>201803191425195_t04.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

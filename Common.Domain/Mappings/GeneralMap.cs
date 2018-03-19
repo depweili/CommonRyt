@@ -35,9 +35,34 @@ namespace Common.Domain.Mappings
     {
         public NavigationMap()
         {
-            this.Property(t => t.Desc).IsRequired().HasMaxLength(50);
+            this.Property(t => t.Desc).HasMaxLength(50);
             this.Property(t => t.Pic).HasMaxLength(50);
             this.Property(t => t.Target).HasMaxLength(100);
+        }
+    }
+
+    public class ImageServerInfoMap : EntityTypeConfiguration<ImageServerInfo>
+    {
+        public ImageServerInfoMap()
+        {
+            this.Property(t => t.ServerName).HasMaxLength(50);
+            this.Property(t => t.ServerUrl).HasMaxLength(50);
+        }
+    }
+
+    public class ImageInfoMap : EntityTypeConfiguration<ImageInfo>
+    {
+        public ImageInfoMap()
+        {
+            this.Property(t => t.ImagePath).HasMaxLength(50);
+        }
+    }
+
+    public class CommentMap : EntityTypeConfiguration<Comment>
+    {
+        public CommentMap()
+        {
+            this.Property(t => t.Content).IsRequired().HasMaxLength(50);
         }
     }
 }

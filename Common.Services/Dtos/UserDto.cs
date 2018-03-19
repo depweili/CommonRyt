@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 
 namespace Common.Services.Dtos
 {
+    public class UserTokenDto
+    {
+        public string AuthId { get; set; }
+
+        public string Token { get; set; }
+    }
+
+    public class LoginDto
+    {
+        public string MobilePhone { get; set; }
+
+        public string PassWord { get; set; }
+    }
+
+
     public class UserDto
     {
         //public int id { get; set; }

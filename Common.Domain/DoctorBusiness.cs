@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Domain
 {
+    //调研
     public class Research : EntityBase<int>
     {
         public string Title { get; set; }
@@ -46,8 +47,13 @@ namespace Common.Domain
         public virtual ResearchSubjectOption ResearchSubjectOption { get; set; }
     }
 
-    public class Conference : EntityBase<int>
+    public class Conference : SubjectEntity<int>
     {
+        public Conference()
+        {
+            ConferenceUid = Guid.NewGuid();
+        }
+        public Guid ConferenceUid { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
 
@@ -58,6 +64,8 @@ namespace Common.Domain
 
         public DateTime EndDate { get; set; }
 
+        public string Memo { get; set; }
+
         public int State { get; set; }
     }
 
@@ -66,23 +74,26 @@ namespace Common.Domain
         public int UserID { get; set; }
         public virtual User User { get; set; }
 
-        public int ConferenceID { get; set; }
-        public virtual Conference Conference { get; set; }
+        public int Type { get; set; }
 
-        public int State { get; set; }
+        public Guid Uid { get; set; }
     }
 
-
+    //文章
     public class Literature : EntityBase<int>
     {
         public string Title { get; set; }
         public string Introduction { get; set; }
         public string Author { get; set; }
-        public string Text { get; set; }
+        public string Content { get; set; }
 
         public string Link { get; set; }
 
         public decimal Price { get; set; }
 
     }
+
+    //
+
+
 }

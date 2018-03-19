@@ -155,6 +155,30 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
+        /// <summary>
+        /// 文章列表
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [Route("api/Articles")]
+        [HttpGet]
+        public IHttpActionResult GetArticles(string queryJson="")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new CommonService();
+                var data = service.GetArticles(queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
 
     }
 }

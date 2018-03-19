@@ -25,4 +25,17 @@ namespace Common.Domain
 
         public bool? IsDeleted { get; set; }
     }
+
+    public class SubjectEntity<TKey>: EntityBase<TKey>
+    {
+        public string FrontPic { get; set; }
+
+        public int ClicksCount { get; set; }
+
+        public int CommentsCount { get; set; }
+
+        public decimal Score { get; set; }
+        //打分人数
+        public int ScoreCount { get; set; }
+    }
 }

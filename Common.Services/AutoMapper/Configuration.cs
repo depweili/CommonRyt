@@ -39,6 +39,11 @@ namespace Common.Services.AutoMapper
                 .ForMember(t => t.CreateTime, opt => opt.Ignore())
                 .ForMember(t => t.Id, opt => opt.Ignore());
 
+
+                cfg.CreateMap<Navigation, NavigationDto>()
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()))
+                .ForMember(t => t.PicUrl, opt => opt.MapFrom(src => Function.GetStaticPicUrl(src.Pic, null)));
+
                 //cfg.AddProfile<Profiles.SourceProfile>();
                 //cfg.AddProfile<Profiles.OrderProfile>();
                 //cfg.AddProfile<Profiles.CalendarEventProfile>();

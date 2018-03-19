@@ -27,7 +27,7 @@ namespace Common.Domain
     }
 
 
-    public class Article : EntityBase<int>
+    public class Article : SubjectEntity<int>
     {
         public Article()
         {
@@ -45,6 +45,8 @@ namespace Common.Domain
         public string Title { get; set; }
 
         public string Content { get; set; }
+
+        public decimal Order { get; set; }
 
     }
 
@@ -70,6 +72,7 @@ namespace Common.Domain
 
     }
 
+    //反馈信息
     public class FeedBack : EntityBase<int>
     {
         public int UserID { get; set; }
@@ -80,6 +83,41 @@ namespace Common.Domain
         public string Process { get; set; }
 
         public int State { get; set; }
+    }
+
+
+    public class ImageServerInfo : EntityBase<int>
+    {
+        public int ServerId { get; set; }
+
+        public string ServerName { get; set; }
+
+        public string ServerUrl { get; set; }
+
+        public int MaxPicAmount { get; set; }
+
+        public int CurPicAmount { get; set; }
+
+        public int State { get; set; }
+    }
+
+    public class ImageInfo : EntityBase<int>
+    {
+
+        public int ImageServerInfoID { get; set; }
+        public virtual ImageServerInfo ImageServerInfo { get; set; }
+
+        public string ImagePath { get; set; }
+    }
+
+    public class Comment : EntityBase<int>
+    {
+        public Guid SubjectKey { get; set; }
+
+        public int UserID { get; set; }
+        public virtual User User { get; set; }
+
+        public string Content { get; set; }
     }
 
 }

@@ -101,18 +101,43 @@ namespace Common.Domain
 
     }
 
-    public class MedicalRecord : EntityBase<int>
+    public class MedicalRecord : SubjectEntity<int>
     {
+        public MedicalRecord()
+        {
+            MedicalRecordUid = Guid.NewGuid();
+        }
+        public Guid MedicalRecordUid { get; set; }
+
         public int DoctorID { get; set; }
         public virtual Doctor Doctor { get; set; }
+
+        public int MedicineCategoryID { get; set; }
+        public virtual MedicineCategory MedicineCategory { get; set; }
 
         public string Title { get; set; }
 
         public string Content { get; set; }
 
-        public string From { get; set; }
+        public int? ArticleID { get; set; }
+        public virtual Article Article { get; set; }
 
     }
 
-    
+
+    public class MedicalRecordImage : EntityBase<int>
+    {
+        public int MedicalRecordID { get; set; }
+        public virtual MedicalRecord MedicalRecord { get; set; }
+
+        public int ImageInfoID { get; set; }
+        public virtual MedicalRecord ImageInfo { get; set; }
+
+        public string Memo { get; set; }
+
+        public int Order { get; set; }
+
+    }
+
+
 }
