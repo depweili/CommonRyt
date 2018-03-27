@@ -119,19 +119,31 @@ namespace Common.Domain
 
         public string Content { get; set; }
 
+        //病史
+        public string MedicalHistory { get; set; }
+        //查体
+        public string PhysicalExamination { get; set; }
+
+        //检查
+        public string Inspection { get; set; }
+        //诊断
+        public string Diagnosis { get; set; }
+
         public int? ArticleID { get; set; }
         public virtual Article Article { get; set; }
+        
+        public decimal? Order { get; set; }
 
     }
 
-
+    //未启用 图片直接guid关联
     public class MedicalRecordImage : EntityBase<int>
     {
         public int MedicalRecordID { get; set; }
         public virtual MedicalRecord MedicalRecord { get; set; }
 
         public int ImageInfoID { get; set; }
-        public virtual MedicalRecord ImageInfo { get; set; }
+        public virtual ImageInfo ImageInfo { get; set; }
 
         public string Memo { get; set; }
 

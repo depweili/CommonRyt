@@ -17,8 +17,8 @@ namespace Common.Domain
         public int? Type { get; set; }
 
         public string Introduction { get; set; }
-        
 
+        public decimal Order { get; set; }
     }
 
     public class FundProject : EntityBase<int>
@@ -34,7 +34,9 @@ namespace Common.Domain
         
         public string Name { get; set; }
         public string Introduction { get; set; }
-        
+
+        public decimal? Order { get; set; }
+
     }
 
 
@@ -51,6 +53,8 @@ namespace Common.Domain
         public virtual MedicalRecord MedicalRecord { get; set; }
 
         public int State { get; set; }
+
+        public decimal? Order { get; set; }
 
     }
     

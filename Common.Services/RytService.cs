@@ -178,7 +178,7 @@ namespace Common.Services
                 var expression = LinqExtensions.True<Doctor>();
                 var queryParam = queryJson.ToJObject();
 
-                expression = expression.And(t => (t.IsDeleted??false) == false && (t.IsValid??true) == true);
+                expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true && t.IsVerified == true);
 
                 if (!queryParam["areaid"].IsEmpty()&& queryParam["areaid"].ToString()!="-1")
                 {

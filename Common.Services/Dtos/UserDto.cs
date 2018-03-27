@@ -59,6 +59,8 @@ namespace Common.Services.Dtos
 
         public string realname { get; set; }
 
+        public string avatarurl { get; set; }
+
         public int? gender { get; set; }
 
         public DateTime? birthday { get; set; }

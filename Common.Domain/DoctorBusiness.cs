@@ -58,15 +58,27 @@ namespace Common.Domain
         public string Content { get; set; }
 
         public string Country { get; set; }
+
         public string Address { get; set; }
+
+        public string City { get; set; }
 
         public DateTime BeginDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public string Memo { get; set; }
 
         public int State { get; set; }
+    }
+
+    public class MyConference : EntityBase<int>
+    {
+        public int ConferenceID { get; set; }
+        public virtual Conference Conference { get; set; }
+
+        public int UserID { get; set; }
+        public virtual User User { get; set; }
     }
 
     public class Attention : EntityBase<int>
@@ -74,9 +86,15 @@ namespace Common.Domain
         public int UserID { get; set; }
         public virtual User User { get; set; }
 
-        public int Type { get; set; }
+        public string Type { get; set; }
 
         public Guid Uid { get; set; }
+
+        public string ArticleUid  { get; set; }
+
+        public string Title { get; set; }
+
+        public string PicUrl { get; set; }
     }
 
     //文章

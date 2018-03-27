@@ -49,6 +49,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -59,13 +60,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppService.cs" />
     <Compile Include="AutoMapper\AutoMapperHelper.cs" />
     <Compile Include="AutoMapper\Configuration.cs" />
     <Compile Include="BaseResponse.cs" />
     <Compile Include="CommonService.cs" />
     <Compile Include="Constant.cs" />
+    <Compile Include="Custom.cs" />
     <Compile Include="Dtos\DoctorDto.cs" />
     <Compile Include="Dtos\DtoBase.cs" />
+    <Compile Include="Dtos\FundDtos.cs" />
     <Compile Include="Dtos\GeneralDto.cs" />
     <Compile Include="Dtos\PatientDto.cs" />
     <Compile Include="Dtos\UserDto.cs" />
@@ -90,6 +94,9 @@
       <Project>{0d6d71cf-bc31-4665-b5bc-a5719cdeda44}</Project>
       <Name>Common.Util</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AppServices\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

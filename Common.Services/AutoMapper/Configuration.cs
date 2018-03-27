@@ -15,6 +15,10 @@ namespace Common.Services.AutoMapper
         {
             Mapper.Initialize(cfg =>
             {
+                //cfg.AddProfile<Profiles.SourceProfile>();
+                //cfg.AddProfile<Profiles.OrderProfile>();
+                //cfg.AddProfile<Profiles.CalendarEventProfile>();
+
                 cfg.CreateMap<Hospital, HospitalDto>();
                 cfg.CreateMap<MedicineCategory, MedicineCategoryDto>();
                 cfg.CreateMap<Doctor, DoctorDto>()
@@ -44,10 +48,23 @@ namespace Common.Services.AutoMapper
                 .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()))
                 .ForMember(t => t.PicUrl, opt => opt.MapFrom(src => Function.GetStaticPicUrl(src.Pic, null)));
 
-                //cfg.AddProfile<Profiles.SourceProfile>();
-                //cfg.AddProfile<Profiles.OrderProfile>();
-                //cfg.AddProfile<Profiles.CalendarEventProfile>();
+                cfg.CreateMap<Article, ArticleDto>()
+                .ForMember(t => t.Content, opt => opt.MapFrom(src => src.Content.Replace("{host}", Function.GetHostAndApp())))
+                .ForMember(t => t.FrontPic, opt => opt.MapFrom(src => Function.GetStaticPicUrl(src.FrontPic,null)));
 
+
+                cfg.CreateMap<Comment, CommentListDto>()
+                .ForMember(t => t.UserName, opt => opt.MapFrom(src => src.User.UserProfile.NickName))
+                .ForMember(t => t.AuthID, opt => opt.MapFrom(src => src.User.AuthID))
+                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => src.User.UserProfile.AvatarUrl));
+
+
+                cfg.CreateMap<MedicalRecordDto, MedicalRecord>()
+                .ForMember(t => t.CreateTime, opt => opt.Ignore())
+                .ForMember(t => t.Id, opt => opt.Ignore());
+
+                cfg.CreateMap<MedicalRecord, MedicalRecordDto>()
+                .ForMember(t => t.StrMedicalRecordUid, opt => opt.MapFrom(src => src.MedicalRecordUid.ToString()));
 
             });
 

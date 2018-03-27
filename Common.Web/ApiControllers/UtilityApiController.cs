@@ -8,9 +8,12 @@ using System.Net.Http.Headers;
 using Common.Util;
 using Common.Services;
 using Common.Services.Dtos;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace Common.Web.ApiControllers
 {
+    
     public class UtilityApiController : ApiControllerBase
     {
         /// <summary>
@@ -67,6 +70,7 @@ namespace Common.Web.ApiControllers
         /// </summary>
         /// <param name="login"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [Route("api/Login")]
         [HttpPost]
         public IHttpActionResult Login(LoginDto login)
@@ -174,6 +178,45 @@ namespace Common.Web.ApiControllers
                 return resp;
             }
         }
+
         
+        [Route("api/Test/UploadImages")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> UploadImages(string content)
+        {
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            var path = Function.GetImageDirectory("Test");
+            var provider = new ReNameMultipartFormDataStreamProvider(path, content);
+
+            List<string> files = new List<string>();
+
+            try
+            {
+                await Request.Content.ReadAsMultipartAsync(provider);
+
+                foreach (MultipartFileData file in provider.FileData)
+                {
+                    files.Add(Path.GetFileName(file.LocalFileName));
+                }
+
+                // Send OK Response along with saved file names to the client.  
+                return Request.CreateResponse(HttpStatusCode.OK, files);
+            }
+            catch (Exception ex)
+            {
+                var resp = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(ex.Message)
+                };
+                resp.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
+
+                return resp;
+            }
+        }
+
     }
 }

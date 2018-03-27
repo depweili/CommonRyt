@@ -58,6 +58,16 @@ namespace Common.Services.Dtos
         public string Title { get; set; }
 
         public string Content { get; set; }
+
+        public string FrontPic { get; set; }
+
+        public int ClicksCount { get; set; }
+
+        public int CommentsCount { get; set; }
+
+        public decimal Score { get; set; }
+        //打分人数
+        public int ScoreCount { get; set; }
     }
 
     public class NavigationDto
@@ -78,6 +88,9 @@ namespace Common.Services.Dtos
     public class ItemInformationDto
     {
         public Guid Uid { get; set; }
+
+        public string ArticleUid { get; set; }
+
         public string Type { get; set; }
 
         public string Target { get; set; }
@@ -98,7 +111,47 @@ namespace Common.Services.Dtos
 
         public DateTime CreateTime { get; set; }
 
-        
+        public string Location { get; set; }
+
+        public DateTime? BeginDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+
     }
 
+    public class CommentDto
+    {
+        public Guid SubjectKey { get; set; }
+
+        public string Content { get; set; }
+    }
+
+    public class CommentListDto
+    {
+        public Guid AuthID { get; set; }
+
+        public string UserName { get; set; }
+
+        public string AvatarUrl { get; set; }
+
+        public string Content { get; set; }
+
+        public DateTime CreateTime { get; set; }
+    }
+
+
+    public class AttentionDto
+    {
+        public string Type { get; set; }
+
+        public Guid Uid { get; set; }
+
+
+        public string Title { get; set; }
+
+        public string PicUrl { get; set; }
+
+        public DateTime CreateTime { get; set; }
+    }
 }

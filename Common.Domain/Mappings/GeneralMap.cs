@@ -54,7 +54,8 @@ namespace Common.Domain.Mappings
     {
         public ImageInfoMap()
         {
-            this.Property(t => t.ImagePath).HasMaxLength(50);
+            this.Property(t => t.ImagePath).HasMaxLength(100);
+            this.Property(t => t.ImageName).HasMaxLength(100);
         }
     }
 

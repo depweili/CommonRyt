@@ -29,7 +29,29 @@ namespace Common.Services.Dtos
 
         public int Order { get; set; }
     }
-    
+
+
+    public class MedicalRecordDto : DtoBase<int>
+    {
+        public string StrMedicalRecordUid { get; set; }
+
+        public int MedicineCategoryID { get; set; }
+
+        public string Title { get; set; }
+
+        public string Content { get; set; }
+
+        //病史
+        public string MedicalHistory { get; set; }
+        //查体
+        public string PhysicalExamination { get; set; }
+
+        //检查
+        public string Inspection { get; set; }
+        //诊断
+        public string Diagnosis { get; set; }
+    }
+
 
     public class DoctorDto : DtoBase<int>
     {

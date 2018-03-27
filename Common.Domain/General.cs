@@ -88,8 +88,6 @@ namespace Common.Domain
 
     public class ImageServerInfo : EntityBase<int>
     {
-        public int ServerId { get; set; }
-
         public string ServerName { get; set; }
 
         public string ServerUrl { get; set; }
@@ -103,9 +101,12 @@ namespace Common.Domain
 
     public class ImageInfo : EntityBase<int>
     {
+        public Guid SubjectKey { get; set; }
 
-        public int ImageServerInfoID { get; set; }
+        public int? ImageServerInfoID { get; set; }
         public virtual ImageServerInfo ImageServerInfo { get; set; }
+
+        public string ImageName { get; set; }
 
         public string ImagePath { get; set; }
     }

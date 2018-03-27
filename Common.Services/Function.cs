@@ -3,17 +3,34 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Net.Http;
 
 namespace Common.Services
 {
     public static class Function
     {
         public static Random random = new Random();
-        
+
+        public static string PathToRelativeUrl(string path)
+        {
+            string root = HttpContext.Current.Server.MapPath(System.Web.HttpContext.Current.Request.ApplicationPath.ToString());//获取程序根目录
+            string newPath = path.Replace(root, ""); //转换成相对路径
+            newPath = newPath.Replace(@"\", @"/");
+            return newPath;
+        }
+
+        public static string RelativeUrlToLocal(string url)
+        {
+            string root = HttpContext.Current.Server.MapPath(System.Web.HttpContext.Current.Request.ApplicationPath.ToString());//获取程序根目录
+            string path = root + url.Replace(@"/", @"\"); //转换成绝对路径
+            return path;
+        }
+
 
         public static string GetHostAndApp()
         {
@@ -73,13 +90,60 @@ namespace Common.Services
             return url;
         }
 
-        public static string GetImageDirectory()
+        public static string GetStaticPicUrlHost(string subdir = null)
+        {
+            var host = GetHostAndApp();
+            var url = host + @"/Images/";
+            if (!string.IsNullOrEmpty(subdir))
+            {
+                url += subdir + "/";
+            }
+            return url;
+        }
+
+        public static string GetImageStorageDirectory(string subdir = null,DateTime dateTime=default(DateTime))
+        {
+            DateTime distribDate = (dateTime == default(DateTime) ? DateTime.Now.Date : dateTime);
+
+            var imgDir = ConfigHelper.GetConfig("ImagesPhysicalPath");
+
+            if (string.IsNullOrEmpty(imgDir))
+            {
+                imgDir = HttpContext.Current.Server.MapPath("~/Images") + @"\";
+            }
+
+            if (!string.IsNullOrEmpty(subdir))
+            {
+                imgDir = imgDir  + subdir + @"\";
+            }
+
+            imgDir = imgDir + distribDate.Year + @"\" + distribDate.Month + @"\" + distribDate.Day + @"\";
+
+            if (!Directory.Exists(imgDir))
+            {
+                Directory.CreateDirectory(imgDir);
+            }
+
+            return imgDir;
+        }
+
+        public static string GetImageDirectory(string subdir=null)
         {
             var imgDir = ConfigHelper.GetConfig("ImagesPhysicalPath");
 
             if (string.IsNullOrEmpty(imgDir))
             {
                 imgDir = HttpContext.Current.Server.MapPath("~/Images") + @"\";
+            }
+
+            if (!string.IsNullOrEmpty(subdir))
+            {
+                imgDir = imgDir  + subdir + @"\";
+            }
+
+            if (!Directory.Exists(imgDir))
+            {
+                Directory.CreateDirectory(imgDir);
             }
 
             return imgDir;
@@ -134,6 +198,33 @@ namespace Common.Services
 
             return query.Skip(pageSize * (pageNum - 1)).Take(pageSize);
         }
+        
 
+        public static async Task<List<string>> SaveImagesAsync(HttpRequestMessage request,string subdir, string namekey,DateTime createtime)
+        {
+            var path = Function.GetImageStorageDirectory(subdir, createtime);
+            var provider = new ReNameMultipartFormDataStreamProvider(path, namekey);
+
+            List<string> files = new List<string>();
+
+            try
+            {
+                await request.Content.ReadAsMultipartAsync(provider);
+
+                foreach (MultipartFileData file in provider.FileData)
+                {
+                    //files.Add(Path.GetFileName(file.LocalFileName));
+                    files.Add(file.LocalFileName);
+                }
+
+                // Send OK Response along with saved file names to the client.  
+                //return Request.CreateResponse(HttpStatusCode.OK, files);
+                return files;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

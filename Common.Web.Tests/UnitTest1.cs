@@ -109,5 +109,94 @@ SELECT * FROM temp");
 
             }
         }
+
+
+        [TestMethod]
+        public void InitData_art()
+        {
+            using (var db = new CommonContext())
+            {
+                db.Set<Article>().AddRange(new List<Article>() {
+                    new Article{ Type=-1, Title="404", Content=@"<p><img src='{host}/api/Image/NDA0LmpwZw2'></img></p>" },
+                    new Article{ Type=0, Title="文章标题1", Content=@"<p>测试内容1</p>" },
+                    new Article{ Type=0, Title="文章标题2", Content=@"<p>测试内容2</p>" },
+                    new Article{ Type=0, Title="文章标题3", Content=@"<p>测试内容3</p>" },
+                    new Article{ Type=0, Title="文章标题4", Content=@"<p>测试内容4</p>" },
+                    new Article{ Type=0, Title="文章标题5", Content=@"<p>测试内容5</p>" },
+                    new Article{ Type=0, Title="文章标题6", Content=@"<p>测试内容6</p>" },
+                    new Article{ Type=0, Title="文章标题7", Content=@"<p>测试内容7</p>" },
+                    new Article{ Type=0, Title="文章标题8", Content=@"<p>测试内容8</p>" }
+                });
+
+                db.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void InitData_fund()
+        {
+            using (var db = new CommonContext())
+            {
+                //db.Set<Fund>().AddRange(new List<Fund>() {
+                //    new Fund{ Name="中华基金会",Introduction="中华基金会介绍"},
+                //    new Fund{ Name="医学基金会",Introduction="医学基金会介绍"},
+                //});
+
+                var fund1 = new Fund { Name = "中华基金会", Introduction = "中华基金会介绍" };
+                db.Set<Fund>().Add(fund1);
+
+                var fund2 = new Fund { Name = "医学基金会", Introduction = "医学基金会介绍" };
+                db.Set<Fund>().Add(fund2);
+
+                db.Set<FundProject>().AddRange(new List<FundProject>() {
+                    new FundProject{  Name="项目1", Introduction="介绍1", Fund=fund1},
+                    new FundProject{  Name="项目2", Introduction="介绍2", Fund=fund1},
+
+                    new FundProject{  Name="项目3", Introduction="介绍3", Fund=fund2},
+                    new FundProject{  Name="项目4", Introduction="介绍4", Fund=fund2},
+                });
+
+                db.SaveChanges();
+            }
+        }
+
+
+        [TestMethod]
+        public void InitData_mrecord()
+        {
+            using (var db = new CommonContext())
+            {
+
+                db.Set<MedicalRecord>().AddRange(new List<MedicalRecord>() {
+                    new MedicalRecord{  Title="病历1", Content="内容1", FrontPic="Desert.jpg", MedicineCategoryID=1, Doctor=null},
+                    new MedicalRecord{  Title="病历2", Content="内容2", FrontPic="Desert.jpg", MedicineCategoryID=1, Doctor=null},
+                    new MedicalRecord{  Title="病历3", Content="内容3", FrontPic="Desert.jpg", MedicineCategoryID=2, Doctor=null},
+                    new MedicalRecord{  Title="病历4", Content="内容4", FrontPic="Desert.jpg", MedicineCategoryID=2, Doctor=null},
+                    new MedicalRecord{  Title="病历5", Content="内容5", FrontPic="Desert.jpg", MedicineCategoryID=3, Doctor=null},
+                    new MedicalRecord{  Title="病历6", Content="内容6", FrontPic="Desert.jpg", MedicineCategoryID=3, Doctor=null},
+                });
+
+                db.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public void InitData_Conference()
+        {
+            using (var db = new CommonContext())
+            {
+
+                db.Set<Conference>().AddRange(new List<Conference>() {
+                    new Conference{  Title="会议1", Content="内容1", FrontPic="Desert.jpg", Address="北京", Country="中国", BeginDate=DateTime.Now.AddDays(10),EndDate=DateTime.Now.AddDays(20)},
+                    new Conference{  Title="会议2", Content="内容2", FrontPic="Desert.jpg", Address="北京", Country="中国", BeginDate=DateTime.Now.AddDays(10),EndDate=DateTime.Now.AddDays(20)},
+                    new Conference{  Title="会议3", Content="内容3", FrontPic="Desert.jpg", Address="北京", Country="中国", BeginDate=DateTime.Now.AddDays(10),EndDate=DateTime.Now.AddDays(20)},
+                    new Conference{  Title="会议4", Content="内容4", FrontPic="Desert.jpg", Address="北京", Country="中国", BeginDate=DateTime.Now.AddDays(10),EndDate=DateTime.Now.AddDays(20)},
+                    new Conference{  Title="会议5", Content="内容5", FrontPic="Desert.jpg", Address="北京", Country="中国", BeginDate=DateTime.Now.AddDays(10),EndDate=DateTime.Now.AddDays(20)},
+                    new Conference{  Title="会议6", Content="内容6", FrontPic="Desert.jpg", Address="北京", Country="中国", BeginDate=DateTime.Now.AddDays(10),EndDate=DateTime.Now.AddDays(20)},
+                });
+
+                db.SaveChanges();
+            }
+        }
     }
 }

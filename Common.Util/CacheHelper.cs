@@ -24,7 +24,13 @@ namespace Common.Util
 
         public static T Get<T>(string key)
         {
-            return (T)Get(key);
+            if (_cache[key] != null)
+            {
+                return (T)_cache[key];
+            }
+
+            return default(T);
+            //return (T)Get(key);
         }
 
         public static void Set(string key, object value)

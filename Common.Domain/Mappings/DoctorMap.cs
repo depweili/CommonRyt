@@ -64,6 +64,7 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Title).HasMaxLength(100);
             this.Property(t => t.Memo).HasMaxLength(200);
             this.Property(t => t.FrontPic).HasMaxLength(200);
+            this.Property(t => t.City).HasMaxLength(200);
         }
     }
 
@@ -71,6 +72,10 @@ namespace Common.Domain.Mappings
     {
         public AttentionMap()
         {
+            this.Property(t => t.PicUrl).HasMaxLength(200);
+            this.Property(t => t.Title).HasMaxLength(100);
+            this.Property(t => t.Type).HasMaxLength(100);
+            this.Property(t => t.ArticleUid).HasMaxLength(50); 
         }
     }
 
@@ -82,6 +87,10 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Content).HasMaxLength(500);
             this.Property(t => t.Title).HasMaxLength(200);
             this.Property(t => t.FrontPic).HasMaxLength(200);
+            this.Property(t => t.Diagnosis).HasMaxLength(500);
+            this.Property(t => t.MedicalHistory).HasMaxLength(500);
+            this.Property(t => t.Inspection).HasMaxLength(500);
+            this.Property(t => t.PhysicalExamination).HasMaxLength(500);
         }
     }
 

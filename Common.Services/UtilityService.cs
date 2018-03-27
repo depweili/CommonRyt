@@ -89,7 +89,7 @@ namespace Common.Services
                         data.ErrorNum = 0;
                         db.SaveChanges();
 
-                        token = Base64DEncrypt.Base64ForUrlEncode(authid + "#" + DateTime.Now.Ticks.ToString());
+                        token = Base64DEncrypt.Base64ForUrlEncode(authid + "#" + DateTime.Now.AddDays(7).Ticks.ToString());
 
                         userdto = new UserTokenDto
                         {
@@ -118,7 +118,7 @@ namespace Common.Services
 
                 using (var db = base.NewDB())
                 {
-                    if (!register.MobilePhone.IsEmpty() && !register.VerifyCode.IsEmpty() && !register.PassWord.IsEmpty()&& CheckVerifyCode(register.MobilePhone, register.VerifyCode))
+                    if (!register.MobilePhone.IsEmpty() && !register.VerifyCode.IsEmpty() && !register.PassWord.IsEmpty() && CheckVerifyCode(register.MobilePhone, register.VerifyCode))
                     {
                         if (!db.Set<UserAuth>().Any(t => t.IdentityType == "mobile" && t.Identifier == register.MobilePhone))
                         {
@@ -165,6 +165,10 @@ namespace Common.Services
 
                             db.SaveChanges();
                         }
+                        else
+                        {
+                            throw new Exception("用户已存在");
+                        }
 
                         //dbitem.LastActiveTime = DateTime.Now;
 
@@ -181,7 +185,7 @@ namespace Common.Services
                             };
                         }
 
-                        
+
 
                         //var signin = db.Set<IntegralSignIn>().FirstOrDefault(t => t.UserIntegral.User.Id == dbitem.User.Id);
 
@@ -189,9 +193,10 @@ namespace Common.Services
                         //{
                         //    userdto.issignin = true;
                         //}
-                        
-                        
+
+
                     }
+                    
                 }
 
                 return userdto;
