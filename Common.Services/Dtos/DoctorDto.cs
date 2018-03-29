@@ -50,6 +50,9 @@ namespace Common.Services.Dtos
         public string Inspection { get; set; }
         //诊断
         public string Diagnosis { get; set; }
+
+
+        public List<string> Images { get; set; }
     }
 
 
@@ -101,5 +104,26 @@ namespace Common.Services.Dtos
 
         public bool IsConnect { get; set; }
 
+    }
+
+    public class ConferenceDto 
+    {
+        public Guid ConferenceUid { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+
+        public string Country { get; set; }
+
+        public string Address { get; set; }
+
+        public string City { get; set; }
+
+        public DateTime BeginDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        public string Memo { get; set; }
+
+        public int State { get; set; }
     }
 }

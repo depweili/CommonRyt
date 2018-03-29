@@ -29,6 +29,7 @@ namespace Common.Services.Dtos
     {
         public Guid FundProjectUid { get; set; }
 
+        public string FrontPic { get; set; }
         public string Name { get; set; }
         public string Introduction { get; set; }
 

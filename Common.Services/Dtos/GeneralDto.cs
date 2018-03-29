@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace Common.Services.Dtos
 {
+
+    public class SmsDto
+    {
+        public string MobilePhone { get; set; }
+
+        public string SmsCode { get; set; }
+
+        public DateTime SendTime { get; set; }
+    }
+
     public class RegisterDto
     {
         public string MobilePhone { get; set; }

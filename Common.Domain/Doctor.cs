@@ -109,7 +109,7 @@ namespace Common.Domain
         }
         public Guid MedicalRecordUid { get; set; }
 
-        public int DoctorID { get; set; }
+        public int? DoctorID { get; set; }
         public virtual Doctor Doctor { get; set; }
 
         public int MedicineCategoryID { get; set; }

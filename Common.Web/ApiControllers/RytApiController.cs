@@ -210,12 +210,12 @@ namespace Common.Web.ApiControllers
             }
             return Ok(res);
         }
-        
+
 
         /// <summary>
         /// 保存慈善赠药
         /// </summary>
-        /// <param name="userpfdto"></param>
+        /// <param name="charitydrugdto"></param>
         /// <returns></returns>
         [Route("api/CharityDrug/Save")]
         [HttpPost]

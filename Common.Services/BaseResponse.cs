@@ -17,5 +17,11 @@ namespace Common.Services
             code = "0";
             msg = "";
         }
+
+        public ResponseBase(string Code,string Message)
+        {
+            code = Code;
+            msg = Message;
+        }
     }
 }

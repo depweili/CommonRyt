@@ -51,6 +51,50 @@ namespace Common.Services
             }
         }
 
+        public string SendSms(string mobile)
+        {
+            if (!ValidatorHelper.IsMobile(mobile))
+            {
+                return "手机号格式不正确";
+            }
+
+            string cacheKey = "SendSms" + mobile;
+
+            string msg = string.Empty;
+            try
+            {
+                var cache = CacheHelper.Get<SmsDto>(cacheKey);
+
+                if (cache != null && cache.SendTime.AddSeconds(80) > DateTime.Now)
+                {
+                    msg = "请稍后再试";
+                }
+                else
+                {
+                    var sms = new SmsDto { MobilePhone=mobile, SmsCode=RandomHelper.GetNumRandomString(4) };
+
+                    var res = Function.SendSms(sms);
+
+                    if (string.IsNullOrEmpty(res))
+                    {
+                        sms.SendTime = DateTime.Now;
+
+                        CacheHelper.Set(cacheKey, sms, DateTime.Now.AddMinutes(5));
+                    }
+                    else
+                    {
+                        msg = res;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+            }
+
+            return msg;
+        }
+
         public dynamic Login(LoginDto login)
         {
             try
@@ -89,7 +133,9 @@ namespace Common.Services
                         data.ErrorNum = 0;
                         db.SaveChanges();
 
-                        token = Base64DEncrypt.Base64ForUrlEncode(authid + "#" + DateTime.Now.AddDays(7).Ticks.ToString());
+                        //token = Base64DEncrypt.Base64ForUrlEncode(authid + "#" + DateTime.Now.AddDays(7).Ticks.ToString());
+
+                        token = TripleDESDEncrypt.Encrypt(authid + "#" + DateTime.Now.AddDays(7).Ticks.ToString());
 
                         userdto = new UserTokenDto
                         {
@@ -118,8 +164,12 @@ namespace Common.Services
 
                 using (var db = base.NewDB())
                 {
-                    if (!register.MobilePhone.IsEmpty() && !register.VerifyCode.IsEmpty() && !register.PassWord.IsEmpty() && CheckVerifyCode(register.MobilePhone, register.VerifyCode))
+                    if (!register.MobilePhone.IsEmpty() && !register.VerifyCode.IsEmpty() && !register.PassWord.IsEmpty())
                     {
+                        if (!CheckVerifyCode(register.MobilePhone, register.VerifyCode))
+                        {
+                            throw new Exception("验证码错误");
+                        }
                         if (!db.Set<UserAuth>().Any(t => t.IdentityType == "mobile" && t.Identifier == register.MobilePhone))
                         {
                             User user = new User();
@@ -175,7 +225,7 @@ namespace Common.Services
                         //var auth = db.Set<UserAuth>().FirstOrDefault(t => t.IdentityType == "mobile" && t.Identifier == register.MobilePhone);
                         if (!authid.IsEmpty())
                         {
-                            token = authid + "#" + DateTime.Now.Ticks.ToString();
+                            token = TripleDESDEncrypt.Encrypt(authid + "#" + DateTime.Now.AddDays(7).Ticks.ToString());
 
                             userdto = new UserTokenDto
                             {
@@ -209,7 +259,14 @@ namespace Common.Services
 
         public bool CheckVerifyCode(string mobilePhone, string verifyCode)
         {
-            return true;
+            string cacheKey = "SendSms" + mobilePhone;
+            var cache = CacheHelper.Get<SmsDto>(cacheKey);
+
+            if (cache != null&&cache.SmsCode== verifyCode)
+            {
+                return true;
+            }
+            return false;
         }
 
 

@@ -7,6 +7,7 @@ using System.Web.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Common.Web;
 using Common.Web.Controllers;
+using Common.Web.ApiControllers;
 
 namespace Common.Web.Tests.Controllers
 {
@@ -76,6 +77,18 @@ namespace Common.Web.Tests.Controllers
             controller.Delete(5);
 
             // 断言
+        }
+
+
+        [TestMethod]
+        public void GetSmsVerify()
+        {
+            // 排列
+            AppApiController controller = new AppApiController();
+
+            var res = controller.GetSmsVerify("13811289537");
+
+            Console.Write("123");
         }
     }
 }

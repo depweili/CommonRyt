@@ -19,10 +19,8 @@ namespace Common.Services
         public ReNameMultipartFormDataStreamProvider(string path, string uid) : base(path)
         {
             Uid = uid;
-
             Tag = 1;
         }
-
         public override string GetLocalFileName(HttpContentHeaders headers)
         {
             //修改图片名称并返回  
@@ -32,6 +30,44 @@ namespace Common.Services
             newFileName = Uid + "_" + Tag.ToString() + newFileName;
             Tag++;
             return newFileName;
+        }
+
+        public override Task ExecutePostProcessingAsync()
+        {
+
+            return base.ExecutePostProcessingAsync();
+        }
+    }
+
+
+    public class ImagesMultipartFormDataStreamProvider : MultipartFormDataStreamProvider
+    {
+        //关联对象纳入命名
+        public string Uid { get; set; }
+
+        public int Tag { get; set; }
+        
+
+        public ImagesMultipartFormDataStreamProvider(string path):base(path)
+        {
+            string ss = "";
+        }
+        public override string GetLocalFileName(HttpContentHeaders headers)
+        {
+            //修改图片名称并返回  
+            string newFileName = string.Empty;
+            
+            newFileName = Path.GetExtension(headers.ContentDisposition.FileName.Replace("\"", string.Empty));//获取后缀名  
+            //newFileName = DateTime.Now.ToString("yyyyMMddHHmmss") + new Random().Next(0, 99999) + newFileName;
+            newFileName = Uid + "_" + Tag.ToString() + newFileName;
+            Tag++;
+            return newFileName;
+        }
+
+        public override Task ExecutePostProcessingAsync()
+        {
+
+            return base.ExecutePostProcessingAsync();
         }
     }
 }

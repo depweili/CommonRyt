@@ -121,4 +121,15 @@ namespace Common.Domain
         public string Content { get; set; }
     }
 
+    public class SmsRecord : EntityBase<int>
+    {
+        public string MobilePhone { get; set; }
+
+        public string SmsCode { get; set; }
+
+        public string Message { get; set; }
+
+        public DateTime? VerifyTime { get; set; }
+    }
+
 }

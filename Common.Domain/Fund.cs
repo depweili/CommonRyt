@@ -31,7 +31,9 @@ namespace Common.Domain
 
         public int FundID { get; set; }
         public virtual Fund Fund { get; set; }
-        
+
+        public string FrontPic { get; set; }
+
         public string Name { get; set; }
         public string Introduction { get; set; }
 

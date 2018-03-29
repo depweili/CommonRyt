@@ -3,11 +3,13 @@ using Common.Services.Dtos;
 using Common.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace Common.Web.ApiControllers
@@ -15,6 +17,37 @@ namespace Common.Web.ApiControllers
     public class AppApiController : ApiControllerBase
     {
         #region 用户信息
+        /// <summary>
+        /// 获取验证码
+        /// </summary>
+        /// <param name="mobile"></param>
+        /// <returns></returns>
+        [Route("api/App/SmsVerify")]
+        [HttpGet]
+        public IHttpActionResult GetSmsVerify(string mobile)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                UtilityService ws = new UtilityService();
+
+                string data = ws.SendSms(mobile);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
 
         /// <summary>
         /// 用户注册
@@ -96,12 +129,7 @@ namespace Common.Web.ApiControllers
                 var service = new AppService();
                 var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
                 var data = service.GetUserProfile(uid);
-                if (data == null)
-                {
-                    throw new Exception("未找到用户明细信息");
-                }
-
-                res.resData = data;
+                res.resData = data ?? throw new Exception("未找到用户明细信息");
             }
             catch (Exception ex)
             {
@@ -276,7 +304,32 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 
+        /// 病历详情
+        /// </summary>
+        /// <param name="Uid"></param>
+        /// <returns></returns>
+        [Route("api/App/MedicalRecord")]
+        [HttpGet]
+        public IHttpActionResult GetMedicalRecord(Guid Uid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var data = service.GetMedicalRecord(Uid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 我的病历集
         /// </summary>
         /// <param name="queryJson"></param>
         /// <returns></returns>
@@ -330,18 +383,26 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
-
-        [AuthFilter]
-        [Route("api/App/UploadImages")]
+        /// <summary>
+        /// 上传图片（参数+Multipart）
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="subjectUid"></param>
+        /// <returns></returns>
+        //[AuthFilter]
+        //[ApiMonitor]
+        [Route("api/App/UploadImagesAsync")]
         [HttpPost]
-        public async Task<IHttpActionResult> UploadImages(Guid subjectUid)
+        public async Task<IHttpActionResult> UploadImages(string type, Guid subjectUid)
         {
+            //LogHelper.Info("UploadImages"+ subjectUid.ToString());
             var res = new ResponseBase();
             try
             {
                 var service = new AppService();
                 var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
-                var data =await service.UploadImages(uid, subjectUid, Request);
+
+                var data =await service.UploadImages(uid,type, subjectUid, Request);
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -352,9 +413,46 @@ namespace Common.Web.ApiControllers
             }
             catch (Exception ex)
             {
+                LogHelper.Error("UploadImages", ex);
                 res.code = "100";
                 res.msg = ex.Message;
             }
+            return Ok(res);
+        }
+
+        
+        /// <summary>
+        /// 图片上传
+        /// </summary>
+        /// <returns></returns>
+        [Route("api/App/UploadImages")]
+        [HttpPost]
+        public IHttpActionResult UploadImages()
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+
+                var httpRequest = HttpContext.Current.Request;
+
+                var data = service.UploadImages(httpRequest);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error("UploadImages", ex);
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+
             return Ok(res);
         }
         #endregion
@@ -439,7 +537,64 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 我的会议
+        /// 会议详情
+        /// </summary>
+        /// <param name="ConferenceUid"></param>
+        /// <returns></returns>
+        [Route("api/App/Conference")]
+        [HttpGet]
+        public IHttpActionResult GetConference(Guid ConferenceUid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var data = service.GetConference(ConferenceUid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 关注会议（*）
+        /// </summary>
+        /// <param name="ConferenceUid"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/ConferenceAttention")]
+        [HttpPost]
+        public IHttpActionResult PostAttentionConference(Guid ConferenceUid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var authid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.PostAttentionConference(authid, ConferenceUid);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 我的会议（*）
         /// </summary>
         /// <param name="queryJson"></param>
         /// <returns></returns>

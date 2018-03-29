@@ -66,6 +66,8 @@ namespace Common.Services.AutoMapper
                 cfg.CreateMap<MedicalRecord, MedicalRecordDto>()
                 .ForMember(t => t.StrMedicalRecordUid, opt => opt.MapFrom(src => src.MedicalRecordUid.ToString()));
 
+                cfg.CreateMap<Conference, ConferenceDto>();
+
             });
 
             //Mapper.AssertConfigurationIsValid();

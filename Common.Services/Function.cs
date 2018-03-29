@@ -9,12 +9,52 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Net.Http;
+using Common.Services.Dtos;
+using Newtonsoft.Json;
 
 namespace Common.Services
 {
     public static class Function
     {
         public static Random random = new Random();
+
+
+        public static string SendSms(SmsDto sms)
+        {
+            string res = string.Empty;
+            try
+            {
+                string apikey = TripleDESDEncrypt.Decrypt(@"CJwn/xNScEJiG1yux7kXqBg1Kl0Qnt1zREn2v0RLDdjrckSKKHaM0w==");
+
+                string mobile = sms.MobilePhone;
+
+                string text = "【仁医通】您的验证码是" + sms.SmsCode;
+
+                string url_send_sms = "https://sms.yunpian.com/v2/sms/single_send.json";
+
+                string data_send_sms = "apikey=" + apikey + "&mobile=" + mobile + "&text=" + text;
+
+                WebClientHelper wc = new WebClientHelper();
+                wc.Encoding = Encoding.UTF8;
+
+                string resp = wc.Post(url_send_sms, data_send_sms);
+
+                var back = JsonConvert.DeserializeObject<dynamic>(resp);
+
+                if (back.code != "0")
+                {
+                    res = back.msg;
+                }
+
+                
+            }
+            catch (Exception ex)
+            {
+                res = ex.Message;
+            }
+
+            return res;
+        }
 
         public static string PathToRelativeUrl(string path)
         {
@@ -226,5 +266,41 @@ namespace Common.Services
                 throw ex;
             }
         }
+
+
+        public static List<string> SaveImages(HttpRequest httpRequest, string subdir, string namekey, DateTime createtime)
+        {
+            var path = Function.GetImageStorageDirectory(subdir, createtime);
+            List<string> files = new List<string>();
+
+            try
+            {
+                var index = 1;
+                foreach (string file in httpRequest.Files)
+                {
+                    var postedFile = httpRequest.Files[file];
+                    if (postedFile == null) continue;
+
+                    var newFileName = Path.GetExtension(postedFile.FileName);//获取后缀名  
+                    newFileName = namekey + "_" + index.ToString() + newFileName;
+                    var filePath = path + newFileName;
+                    index++;
+                    //if (File.Exists(filePath))
+                    //{
+                    //    File.Delete(filePath);
+                    //}
+                    postedFile.SaveAs(filePath);
+
+                    files.Add(filePath);
+                }
+
+                return files;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

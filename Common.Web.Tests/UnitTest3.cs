@@ -85,8 +85,37 @@ namespace Common.Web.Tests
             //string decode = Base64DEncrypt.Base64ForUrlDecode(encode);
         }
 
-        
+        [TestMethod]
+        public void TestTripleDESDEncrypt()
+        {
+            string key = "29ccd152603790114d2c1e02afb87639";//wx845cc082612156f6
+            //CJwn/xNScEJiG1yux7kXqBg1Kl0Qnt1zREn2v0RLDdjrckSKKHaM0w==
+            string encode = TripleDESDEncrypt.Encrypt(key);
 
+            Console.WriteLine(encode);
+
+            string decode = TripleDESDEncrypt.Decrypt(encode);
+
+            Console.WriteLine(decode);
+
+            //string decode = Base64DEncrypt.Base64ForUrlDecode(encode);
+        }
+
+
+        [TestMethod]
+        public void TestHelper()
+        {
+            
+
+            var data = new string[]{ "123", "234", "13811289537", "8613811289537", "33811289534" };
+
+            foreach (var s in data)
+            {
+                var res = ValidatorHelper.IsMobile(s);
+
+                Console.WriteLine(s+" : "+res);
+            }
+        }
 
     }
 }

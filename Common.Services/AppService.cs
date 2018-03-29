@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Services
 {
@@ -259,6 +260,47 @@ namespace Common.Services
             }
         }
 
+        public dynamic GetMedicalRecord(Guid uid)
+        {
+            string cacheKey = "GetMedicalRecord" + uid.ToString();
+            try
+            {
+                
+                try
+                {
+                    var res = CacheHelper.Get<MedicalRecordDto>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == uid);
+
+                    var res = data.MapTo<MedicalRecordDto>();
+
+                    var host = Function.GetHostAndApp();
+
+                    res.Images = db.Set<ImageInfo>().Where(t => t.SubjectKey == uid).OrderBy(t=>t.ImageName).Select(t => host + "/" + t.ImagePath).ToList();
+
+                    CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
         public string PostMedicalRecord(Guid authid, MedicalRecordDto mr)
         {
@@ -316,7 +358,7 @@ namespace Common.Services
             }
         }
 
-        public async Task<string> UploadImages(Guid uid, Guid subjectUid, HttpRequestMessage request)
+        public async Task<string> UploadImages(Guid uid,string type, Guid subjectUid, HttpRequestMessage request)
         {
             string res = string.Empty;
             try
@@ -325,9 +367,18 @@ namespace Common.Services
                 {
                     using (var db = base.NewDB())
                     {
-                        var mr = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
+                        EntityBase<int> dbitem;
+                        switch (type.ToLower())
+                        {
+                            case "medicalrecord":
+                                dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
+                                break;
+                            default:
+                                dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
+                                break;
+                        }
 
-                        var filelist = await Function.SaveImagesAsync(request, "MedicalRecord", subjectUid.ToString(), mr.CreateTime);
+                        var filelist = await Function.SaveImagesAsync(request, "MedicalRecord", subjectUid.ToString(), dbitem.CreateTime);
 
                         SaveImageInfo(db, filelist, subjectUid);
 
@@ -348,6 +399,73 @@ namespace Common.Services
 
             return res;
         }
+
+        public string UploadImages(HttpRequest httpRequest)
+        {
+            string res = string.Empty;
+            try
+            {
+                if (httpRequest.Files.Count > 0)
+                {
+                    var subjectUid = httpRequest.Form["subjectUid"].ToGuid();
+                    var type= httpRequest.Form["type"];
+
+                    if (!string.IsNullOrEmpty(type) && subjectUid != default(Guid))
+                    {
+                        using (var db = base.NewDB())
+                        {
+                            EntityBase<int> dbitem;
+
+                            var dir = string.Empty;
+                            switch (type.ToLower())
+                            {
+                                case "medicalrecord":
+                                    dir = "MedicalRecord";
+                                    dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
+                                    break;
+                                default:
+                                    dir = "MedicalRecord";
+                                    dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
+                                    break;
+                            }
+
+                            if (!string.IsNullOrEmpty(dir))
+                            {
+                                var filelist = Function.SaveImages(httpRequest, dir, subjectUid.ToString(), dbitem.CreateTime);
+
+                                SaveImageInfo(db, filelist, subjectUid);
+
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                res = "未识别参数";
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                        res = "缺少参数";
+                    }
+                }
+                else
+                {
+                    res = "没有文件";
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            return res;
+        }
+
+        
+
+
 
         //记录图片信息
         private void SaveImageInfo(DbContext db, List<string> files, Guid subjectUid)
@@ -372,6 +490,7 @@ namespace Common.Services
                 throw ex;
             }
         }
+
         
 
         public dynamic GetFundOverview(string queryJson)
@@ -412,10 +531,18 @@ namespace Common.Services
 
                     List<FundDto> list = new List<FundDto>();
 
+                    var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
                     foreach (var f in fundlist)
                     {
                         var fdto = new FundDto { Name = f.Name, FundUid = f.FundUid };
-                        var plst = db.Set<FundProject>().Where(t => t.FundID == f.Id).OrderBy(t => t.Order).ThenByDescending(t => t.CreateTime).Select(t=>new FundProjectDto{ Name=t.Name, CreateTime=t.CreateTime,FundProjectUid=t.FundProjectUid}).ToList();
+                        var plst = db.Set<FundProject>().Where(t => t.FundID == f.Id).OrderBy(t => t.Order).ThenByDescending(t => t.CreateTime).Select(t => new FundProjectDto
+                        {
+                            Name = t.Name,
+                            CreateTime = t.CreateTime,
+                            FundProjectUid = t.FundProjectUid,
+                            FrontPic = string.IsNullOrEmpty(t.FrontPic) ? null : StaticPicUrlHost + t.FrontPic
+                        }).ToList();
                         fdto.FundProjects = plst;
                         list.Add(fdto);
                     }
@@ -566,6 +693,87 @@ namespace Common.Services
             }
         }
 
+
+        public dynamic GetConference(Guid uid)
+        {
+            string cacheKey = "GetConference" + uid.ToString();
+            try
+            {
+
+                try
+                {
+                    var res = CacheHelper.Get<ConferenceDto>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<Conference>().Single(t => t.ConferenceUid == uid);
+
+                    var res = data.MapTo<ConferenceDto>();
+
+                    //var host = Function.GetHostAndApp();
+
+                    //res.Images = db.Set<ImageInfo>().Where(t => t.SubjectKey == uid).OrderBy(t => t.ImageName).Select(t => host + "/" + t.ImagePath).ToList();
+
+                    CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public string PostAttentionConference(Guid authid, Guid conferenceUid)
+        {
+            string msg = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var user = db.Set<User>().FirstOrDefault(u => u.AuthID == authid && u.IsValid == true);
+                    if (user != null)
+                    {
+                        if (!db.Set<MyConference>().Any(t => t.Conference.ConferenceUid == conferenceUid && t.UserID == user.Id))
+                        {
+                            var c = db.Set<Conference>().Single(t => t.ConferenceUid == conferenceUid);
+                            db.Set<MyConference>().Add(new MyConference { Conference = c, User = user });
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            msg = "已关注";
+                        }
+
+                    }
+                    else
+                    {
+                        msg = "请登陆";
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            return msg;
+        }
+
         public dynamic GetMyConferences(Guid authid, string queryJson)
         {
             try
@@ -695,7 +903,7 @@ namespace Common.Services
                     {
                         //Author = t.Author,
                         Title = t.Title,
-                        FrontPic = t.PicUrl,
+                        FrontPic = string.IsNullOrEmpty(t.PicUrl) ? null : StaticPicUrlHost + t.PicUrl,//t.PicUrl,
                         Uid = t.Uid,
                         ArticleUid=t.ArticleUid,
                         Type = t.Type,

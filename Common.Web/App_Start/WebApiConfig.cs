@@ -42,6 +42,10 @@ namespace Common.Web
             );
 
             //config.Filters.Add(new AuthFilterAttribute());
+
+            config.Filters.Add(new ApiMonitorAttribute());
+
+            config.MessageHandlers.Add(new CustomErrorDelegatingHandler());
         }
     }
 }

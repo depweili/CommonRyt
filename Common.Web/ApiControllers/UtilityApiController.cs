@@ -10,6 +10,7 @@ using Common.Services;
 using Common.Services.Dtos;
 using System.Threading.Tasks;
 using System.IO;
+using System.Web;
 
 namespace Common.Web.ApiControllers
 {
@@ -215,6 +216,50 @@ namespace Common.Web.ApiControllers
                 resp.Content.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
 
                 return resp;
+            }
+        }
+
+        
+
+
+        [Route("api/Test/UploadImages1")]
+        [HttpPost]
+        public HttpResponseMessage UploadImages1()
+        {
+            try
+            {
+                HttpResponseMessage response = new HttpResponseMessage();
+                var httpRequest = HttpContext.Current.Request;
+
+                var sss = httpRequest.Form.AllKeys;
+
+                if (httpRequest.Files.Count > 0)
+                {
+
+                    foreach (string file in httpRequest.Files)
+                    {
+                        var postedFile = httpRequest.Files[file];
+                        if (postedFile == null) continue;
+                        var filePath = HttpContext.Current.Server.MapPath("~/images/Test/" + postedFile.FileName);
+                        //先删除
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                        }
+                        postedFile.SaveAs(filePath);
+                    }
+                }
+                return response;
+            }
+            catch (Exception e)
+            {
+                //在webapi中要想抛出异常必须这样抛出，否则之抛出一个默认500的异常
+                var resp = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent(e.ToString()),
+                    ReasonPhrase = "error"
+                };
+                throw new HttpResponseException(resp);
             }
         }
 

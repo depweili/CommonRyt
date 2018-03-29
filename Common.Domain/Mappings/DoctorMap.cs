@@ -68,6 +68,13 @@ namespace Common.Domain.Mappings
         }
     }
 
+    public class MyConferenceMap : EntityTypeConfiguration<MyConference>
+    {
+        public MyConferenceMap()
+        {
+        }
+    }
+
     public class AttentionMap : EntityTypeConfiguration<Attention>
     {
         public AttentionMap()
@@ -107,8 +114,9 @@ namespace Common.Domain.Mappings
     {
         public FundProjectMap()
         {
-            this.Property(t => t.Name).HasMaxLength(200);
+            this.Property(t => t.Name).HasMaxLength(200); 
             this.Property(t => t.Introduction).HasMaxLength(500);
+            this.Property(t => t.FrontPic).HasMaxLength(200);
         }
     }
 
