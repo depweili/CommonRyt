@@ -198,5 +198,24 @@ SELECT * FROM temp");
                 db.SaveChanges();
             }
         }
+
+        [TestMethod]
+        public void InitData_Video()
+        {
+            using (var db = new CommonContext())
+            {
+
+                db.Set<VideoInfo>().AddRange(new List<VideoInfo>() {
+                    new VideoInfo{  Title="测试1", Presenter="张三",Source="http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4", Snapshot="http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg",VideoSeriesID=1},
+                    new VideoInfo{  Title="测试2", Presenter="张三",Source="http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4", Snapshot="http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg",VideoSeriesID=1},
+                    new VideoInfo{  Title="测试3", Presenter="张三",Source="http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4", Snapshot="http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg",VideoSeriesID=1},
+                    new VideoInfo{  Title="测试4", Presenter="张三",Source="http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4", Snapshot="http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg",VideoSeriesID=1},
+                    new VideoInfo{  Title="测试5", Presenter="张三",Source="http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4", Snapshot="http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg",VideoSeriesID=1},
+                    new VideoInfo{  Title="测试6", Presenter="张三",Source="http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4", Snapshot="http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg",VideoSeriesID=1},
+                });
+
+                db.SaveChanges();
+            }
+        }
     }
 }

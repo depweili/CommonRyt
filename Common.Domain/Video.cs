@@ -41,6 +41,8 @@ namespace Common.Domain
 
         public string Title { get; set; }
 
+        public string Presenter { get; set; }
+
         public string Introduction { get; set; }
 
         public string File { get; set; }

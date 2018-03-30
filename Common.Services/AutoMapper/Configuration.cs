@@ -68,6 +68,8 @@ namespace Common.Services.AutoMapper
 
                 cfg.CreateMap<Conference, ConferenceDto>();
 
+                cfg.CreateMap<VideoInfo, VideoInfoDto>();
+
             });
 
             //Mapper.AssertConfigurationIsValid();

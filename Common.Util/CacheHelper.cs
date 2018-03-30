@@ -53,6 +53,18 @@ namespace Common.Util
             _cache.Remove(key);
         }
 
+        public static void Clear(string key)
+        {
+            IDictionaryEnumerator CacheEnum = _cache.GetEnumerator();
+            while (CacheEnum.MoveNext())
+            {
+                if(CacheEnum.Key.ToString().StartsWith(key))
+                {
+                    _cache.Remove(CacheEnum.Key.ToString());
+                }
+            }
+        }
+
         public static void Clear()
         {
             IDictionaryEnumerator CacheEnum = _cache.GetEnumerator();

@@ -39,7 +39,8 @@ namespace Common.Services
                         mobilephone = userpf.MobilePhone,
                         isverified = userpf.IsVerified ?? false,
                         birthday = userpf.BirthDay,
-                        area = userpf.Area
+                        area = userpf.Area,
+                        username=user.UserName
                     };
 
                     return userpfdto;
@@ -624,6 +625,8 @@ namespace Common.Services
             }
         }
 
+        
+
         public dynamic GetConferences(string queryJson)
         {
             try
@@ -751,6 +754,8 @@ namespace Common.Services
                             var c = db.Set<Conference>().Single(t => t.ConferenceUid == conferenceUid);
                             db.Set<MyConference>().Add(new MyConference { Conference = c, User = user });
                             db.SaveChanges();
+
+                            CacheHelper.Clear("GetMyConferences" + authid.ToString());
                         }
                         else
                         {
@@ -778,7 +783,7 @@ namespace Common.Services
         {
             try
             {
-                string cacheKey = "GetMyConferences" + queryJson;
+                string cacheKey = "GetMyConferences" + authid.ToString() + queryJson;
                 try
                 {
                     var res = CacheHelper.Get<List<ItemInformationDto>>(cacheKey);
@@ -916,6 +921,112 @@ namespace Common.Services
                     var res = list.ToList();
 
                     //CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                    return res;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        public dynamic GetVideo(Guid uid)
+        {
+            string cacheKey = "GetVideo" + uid.ToString();
+            try
+            {
+
+                try
+                {
+                    var res = CacheHelper.Get<VideoInfoDto>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<VideoInfo>().Single(t => t.VideoUID == uid);
+
+                    var res = data.MapTo<VideoInfoDto>();
+
+                    //var host = Function.GetHostAndApp();
+
+                    //res.Images = db.Set<ImageInfo>().Where(t => t.SubjectKey == uid).OrderBy(t => t.ImageName).Select(t => host + "/" + t.ImagePath).ToList();
+
+                    CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public dynamic GetVideos(string queryJson)
+        {
+            try
+            {
+                string cacheKey = "GetVideos" + queryJson;
+                try
+                {
+                    var res = CacheHelper.Get<List<ItemInformationDto>>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+
+                    var expression = LinqExtensions.True<VideoInfo>();
+                    var queryParam = queryJson.ToJObject();
+
+                    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                    if (!queryParam["SeriesTitle"].IsEmpty())
+                    {
+                        string keyword = queryParam["SeriesTitle"].ToString();
+
+                        expression = expression.And(t => t.VideoSeries.Title == keyword);
+                    }
+
+                    var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                    var query = db.Set<VideoInfo>().Where(expression).OrderByDescending(t => t.CreateTime).Select(t => new ItemInformationDto
+                    {
+                        Author = t.Presenter,
+                        Title = t.Title,
+                        FrontPic = !string.IsNullOrEmpty(t.Snapshot)&& !t.Snapshot.StartsWith("http") ? StaticPicUrlHost + t.Snapshot : t.Snapshot,
+                        Uid = t.VideoUID,
+                        Type = "VideoInfo",
+                        CreateTime = t.CreateTime,
+                    });
+
+
+                    var list = Function.GetPageData(query, queryParam);
+
+                    var res = list.ToList();
+
+                    CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
 
                     return res;
                 }

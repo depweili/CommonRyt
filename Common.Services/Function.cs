@@ -276,9 +276,10 @@ namespace Common.Services
             try
             {
                 var index = 1;
-                foreach (string file in httpRequest.Files)
+                //foreach (var file in httpRequest.Files)
+                for (int i = 0; i < httpRequest.Files.Count; i++)
                 {
-                    var postedFile = httpRequest.Files[file];
+                    var postedFile = httpRequest.Files[i];
                     if (postedFile == null) continue;
 
                     var newFileName = Path.GetExtension(postedFile.FileName);//获取后缀名  

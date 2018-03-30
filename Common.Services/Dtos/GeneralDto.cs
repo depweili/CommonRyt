@@ -164,4 +164,27 @@ namespace Common.Services.Dtos
 
         public DateTime CreateTime { get; set; }
     }
+
+
+    public class VideoInfoDto
+    {
+        public Guid VideoUID { get; set; }
+
+        public string Title { get; set; }
+
+        public string Presenter { get; set; }
+
+        public string Introduction { get; set; }
+
+        public string File { get; set; }
+
+        public string Source { get; set; }
+
+        public string Snapshot { get; set; }
+
+        public double? Length { get; set; }
+
+        public int Order { get; set; }
+
+    }
 }

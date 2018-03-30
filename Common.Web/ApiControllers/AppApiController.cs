@@ -139,9 +139,37 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
         #endregion
-
+        
 
         #region 文章
+
+        /// <summary>
+        /// 导航
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [Route("api/App/Navigations")]
+        [HttpGet]
+        public IHttpActionResult GetNavigations(int type = 0)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new CommonService();
+                var data = service.GetNavigations(type);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+
+            return Ok(res);
+        }
+
+
         /// <summary>
         /// 文章列表
         /// </summary>
@@ -564,19 +592,21 @@ namespace Common.Web.ApiControllers
         /// <summary>
         /// 关注会议（*）
         /// </summary>
-        /// <param name="ConferenceUid"></param>
+        /// <param name="obj"></param>
         /// <returns></returns>
         [AuthFilter]
         [Route("api/App/ConferenceAttention")]
         [HttpPost]
-        public IHttpActionResult PostAttentionConference(Guid ConferenceUid)
+        public IHttpActionResult PostAttentionConference(dynamic obj)
         {
             var res = new ResponseBase();
             try
             {
                 var service = new AppService();
                 var authid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
-                var data = service.PostAttentionConference(authid, ConferenceUid);
+                string strconferenceUid = Convert.ToString(obj.ConferenceUid);
+                var conferenceUid = strconferenceUid.ToGuid();
+                var data = service.PostAttentionConference(authid, conferenceUid);
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -683,8 +713,63 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
+        #endregion
 
-        
+
+        #region 视频
+        /// <summary>
+        /// 讲堂视频
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        //[Route("api/App/LectureOverView")]
+        [Route("api/App/Videos")]
+        [HttpGet]
+        public IHttpActionResult GetVideos(string queryJson)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var data = service.GetVideos(queryJson);
+                
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 视频详情
+        /// </summary>
+        /// <param name="videoUid"></param>
+        /// <returns></returns>
+        [Route("api/App/Video")]
+        [HttpGet]
+        public IHttpActionResult GetVideo(Guid videoUid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var data = service.GetVideo(videoUid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
 
         #endregion
     }

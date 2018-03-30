@@ -27,6 +27,7 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Introduction).HasMaxLength(100);
             this.Property(t => t.File).HasMaxLength(100);
             this.Property(t => t.Snapshot).HasMaxLength(100);
+            this.Property(t => t.Presenter).HasMaxLength(100);
         }
     }
 }

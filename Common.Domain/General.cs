@@ -121,6 +121,7 @@ namespace Common.Domain
         public string Content { get; set; }
     }
 
+    //未使用
     public class SmsRecord : EntityBase<int>
     {
         public string MobilePhone { get; set; }
@@ -131,5 +132,7 @@ namespace Common.Domain
 
         public DateTime? VerifyTime { get; set; }
     }
+
+    
 
 }

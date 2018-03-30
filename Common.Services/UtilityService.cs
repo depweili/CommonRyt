@@ -176,6 +176,8 @@ namespace Common.Services
 
                             authid = user.AuthID.ToString();
 
+                            user.UserName = register.MobilePhone;
+
                             user.Password = MD5Encrypt.GetStrMD5(register.PassWord);
 
                             user = db.Set<User>().Add(user);

@@ -37,10 +37,6 @@ namespace Common.Services.Dtos
 
         public string address { get; set; }
 
-        public string agentcode { get; set; }
-
-        public bool isagent { get; set; }
-
         public bool issignin { get; set; }
 
         public bool? isvalid { get; set; }
@@ -54,6 +50,8 @@ namespace Common.Services.Dtos
     public class UserProfileDto
     {
         public Guid authid { get; set; }
+
+        public string username { get; set; }
 
         public string nickname { get; set; }
 
