@@ -217,5 +217,63 @@ SELECT * FROM temp");
                 db.SaveChanges();
             }
         }
+
+
+        [TestMethod]
+        public void InitData_Survey()
+        {
+            using (var db = new CommonContext())
+            {
+                var s = new Survey { Title = "测试1", BeginDate = DateTime.Now, Description = "测试1111111" };
+
+                var sq = new List<SurveyQuestion>() {
+                    new SurveyQuestion(){  Survey=s, Number=1, Title="问题1", Type=1,
+                        items =new List<SurveyQuestionOption>(){
+                            new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
+                            new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
+                            new SurveyQuestionOption(){  Value="C", Content="ccccccc"},
+                            new SurveyQuestionOption(){  Value="D", Content="dddddddd"},
+                        }
+                    },
+                    new SurveyQuestion(){  Survey=s, Number=2, Title="问题2", Type=2,
+                        items =new List<SurveyQuestionOption>(){
+                            new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
+                            new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
+                            new SurveyQuestionOption(){  Value="C", Content="ccccccc"},
+                            new SurveyQuestionOption(){  Value="D", Content="dddddddd"},
+                        }
+                    }
+                };
+
+                db.Set<Survey>().Add(s);
+                db.Set<SurveyQuestion>().AddRange(sq);
+
+                s = new Survey { Title = "测试2", BeginDate = DateTime.Now, Description = "测试2222222" };
+
+                sq = new List<SurveyQuestion>() {
+                    new SurveyQuestion(){  Survey=s, Number=1, Title="问题111", Type=1,
+                        items =new List<SurveyQuestionOption>(){
+                            new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
+                            new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
+                            new SurveyQuestionOption(){  Value="C", Content="ccccccc"},
+                            new SurveyQuestionOption(){  Value="D", Content="dddddddd"},
+                        }
+                    },
+                    new SurveyQuestion(){  Survey=s, Number=2, Title="问题222", Type=2,
+                        items =new List<SurveyQuestionOption>(){
+                            new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
+                            new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
+                            new SurveyQuestionOption(){  Value="C", Content="ccccccc"},
+                            new SurveyQuestionOption(){  Value="D", Content="dddddddd"},
+                        }
+                    }
+                };
+
+                db.Set<Survey>().Add(s);
+                db.Set<SurveyQuestion>().AddRange(sq);
+
+                db.SaveChanges();
+            }
+        }
     }
 }

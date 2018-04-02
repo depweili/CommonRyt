@@ -28,7 +28,7 @@ namespace Common.Services
 
                 string mobile = sms.MobilePhone;
 
-                string text = "【仁医通】您的验证码是" + sms.SmsCode;
+                string text = "【仁医通】您的验证码是" + sms.SmsCode+"，有效期3分钟。如非本人操作请忽略。";
 
                 string url_send_sms = "https://sms.yunpian.com/v2/sms/single_send.json";
 
@@ -47,6 +47,49 @@ namespace Common.Services
                 }
 
                 
+            }
+            catch (Exception ex)
+            {
+                res = ex.Message;
+            }
+
+            return res;
+        }
+
+        public static string SendSmsTpl(SmsDto sms)
+        {
+            string res = string.Empty;
+            try
+            {
+                string apikey = TripleDESDEncrypt.Decrypt(@"CJwn/xNScEJiG1yux7kXqBg1Kl0Qnt1zREn2v0RLDdjrckSKKHaM0w==");
+
+                int tpl_id = 2231786;
+
+                string mobile = sms.MobilePhone;
+
+                //string text = "【仁医通】您的验证码是" + sms.SmsCode + "，有效期3分钟。如非本人操作请忽略。";
+
+                string url_send_sms = "https://sms.yunpian.com/v2/sms/tpl_single_send.json";
+
+                string tpl_value = HttpUtility.UrlEncode(
+                    HttpUtility.UrlEncode("#code#", Encoding.UTF8) + "=" + HttpUtility.UrlEncode(sms.SmsCode, Encoding.UTF8), Encoding.UTF8);
+
+                string data_tpl_sms = "apikey=" + apikey + "&mobile=" + mobile +
+                "&tpl_id=" + tpl_id.ToString() + "&tpl_value=" + tpl_value;
+
+                WebClientHelper wc = new WebClientHelper();
+                wc.Encoding = Encoding.UTF8;
+
+                string resp = wc.Post(url_send_sms, data_tpl_sms);
+
+                var back = JsonConvert.DeserializeObject<dynamic>(resp);
+
+                if (back.code != "0")
+                {
+                    res = back.msg;
+                }
+
+
             }
             catch (Exception ex)
             {

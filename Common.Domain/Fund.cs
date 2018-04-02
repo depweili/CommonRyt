@@ -38,6 +38,7 @@ namespace Common.Domain
         public string Introduction { get; set; }
 
         public decimal? Order { get; set; }
+        
 
     }
 

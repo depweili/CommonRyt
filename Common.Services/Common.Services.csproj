@@ -72,6 +72,7 @@
     <Compile Include="Dtos\FundDtos.cs" />
     <Compile Include="Dtos\GeneralDto.cs" />
     <Compile Include="Dtos\PatientDto.cs" />
+    <Compile Include="Dtos\SurveyDto.cs" />
     <Compile Include="Dtos\UserDto.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="RytService.cs" />

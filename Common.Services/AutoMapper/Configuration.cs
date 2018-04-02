@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Common.Domain;
 using Common.Services.Dtos;
+using Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,9 +55,10 @@ namespace Common.Services.AutoMapper
 
 
                 cfg.CreateMap<Comment, CommentListDto>()
-                .ForMember(t => t.UserName, opt => opt.MapFrom(src => src.User.UserProfile.NickName))
+                .ForMember(t => t.UserName, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.User.UserProfile.NickName) ? StringHelper.ReplaceWithSpecialChar(src.User.UserName, 3, 4, '*') : src.User.UserProfile.NickName))
                 .ForMember(t => t.AuthID, opt => opt.MapFrom(src => src.User.AuthID))
-                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => src.User.UserProfile.AvatarUrl));
+                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => src.User.UserProfile.AvatarUrl))
+                .ForMember(t => t.CreateTime, opt => opt.MapFrom(src => src.CreateTime.ToAgoDateFomat()));
 
 
                 cfg.CreateMap<MedicalRecordDto, MedicalRecord>()
@@ -69,6 +71,15 @@ namespace Common.Services.AutoMapper
                 cfg.CreateMap<Conference, ConferenceDto>();
 
                 cfg.CreateMap<VideoInfo, VideoInfoDto>();
+
+
+                cfg.CreateMap<Survey, SurveyDto>();
+
+                cfg.CreateMap<SurveyQuestion, SurveyQuestionDto>();
+
+                cfg.CreateMap<SurveyQuestionOption, SurveyQuestionOptionDto>();
+
+                
 
             });
 

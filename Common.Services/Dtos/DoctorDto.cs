@@ -33,6 +33,7 @@ namespace Common.Services.Dtos
 
     public class MedicalRecordDto : DtoBase<int>
     {
+        public string StrFundProjectUid { get; set; }
         public string StrMedicalRecordUid { get; set; }
 
         public int MedicineCategoryID { get; set; }

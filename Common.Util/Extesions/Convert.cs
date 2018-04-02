@@ -248,5 +248,17 @@ namespace Common.Util
         }
 
         #endregion
+
+
+        public static string ToAgoDateFomat(this DateTime date)
+        {
+            var times = DateTime.Now - date;
+            var s = Convert.ToDecimal(times.TotalSeconds);//秒
+            var m = Convert.ToDecimal(times.TotalMinutes);//分钟
+            var h = Convert.ToDecimal(times.TotalHours);//小时
+            var d = Convert.ToDecimal(times.TotalDays);//天
+
+            return s < 60 ? "" + decimal.Truncate(s) + " 秒前" : m < 60 ? "" + decimal.Truncate(m) + " 分钟前" : h < 24 ? "" + decimal.Truncate(h) + " 小时前" : d < 2 ? "" + decimal.Truncate(d) + " 天前" : date.ToString("yyyy-MM-dd HH:mm:ss");
+        }
     }
 }

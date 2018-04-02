@@ -73,7 +73,8 @@ namespace Common.Services
                 {
                     var sms = new SmsDto { MobilePhone=mobile, SmsCode=RandomHelper.GetNumRandomString(4) };
 
-                    var res = Function.SendSms(sms);
+                    //var res = Function.SendSms(sms);
+                    var res = Function.SendSmsTpl(sms);
 
                     if (string.IsNullOrEmpty(res))
                     {
@@ -152,6 +153,51 @@ namespace Common.Services
 
                 throw ex;
             }
+        }
+
+        public string ResetPwd(RegisterDto register)
+        {
+            string msg = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    if (!register.MobilePhone.IsEmpty() && !register.VerifyCode.IsEmpty() && !register.PassWord.IsEmpty())
+                    {
+                        if (!CheckVerifyCode(register.MobilePhone, register.VerifyCode))
+                        {
+                            msg = "验证码错误";
+                        }
+                        else
+                        {
+                            var userauth = db.Set<UserAuth>().FirstOrDefault(t => t.Identifier == register.MobilePhone && t.IdentityType == "mobile");
+
+                            if (userauth != null && userauth.User != null)
+                            {
+                                userauth.User.Password = MD5Encrypt.GetStrMD5(register.PassWord);
+
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                msg = "手机号尚未注册";
+                            }
+                        }
+
+                        
+                    }
+                    else
+                    {
+                        msg = "信息缺失";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return msg;
         }
 
         public dynamic RegisterUser(RegisterDto register)
@@ -266,6 +312,7 @@ namespace Common.Services
 
             if (cache != null&&cache.SmsCode== verifyCode)
             {
+                CacheHelper.Remove(cacheKey);
                 return true;
             }
             return false;

@@ -154,14 +154,14 @@ namespace Common.Services
 
                 expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
 
-                if (!queryParam["MedicineCategory"].IsEmpty() && queryParam["MedicineCategory"].ToString() != "-1")
+                if (!queryParam["MedicineCategory"].IsEmpty() )
                 {
                     int keyword = queryParam["MedicineCategory"].ToInt();
 
                     expression = expression.And(t => t.MedicineCategoryID == keyword);
                 }
 
-                if (!queryParam["FundProjectUid"].IsEmpty() && queryParam["FundProjectUid"].ToString() != "-1")
+                if (!queryParam["FundProjectUid"].IsEmpty() )
                 {
                     Guid keyword = queryParam["FundProjectUid"].ToString().ToGuid();
 
@@ -173,7 +173,6 @@ namespace Common.Services
                     expression.And(t => querypm.Contains(t.Id));
                 }
 
-
                 var StaticPicUrlHost = Function.GetStaticPicUrlHost();
 
                 var query = db.Set<MedicalRecord>().Where(expression).OrderByDescending(t => t.Order).ThenByDescending(t => t.CreateTime).Select(t => new ItemInformationDto
@@ -182,7 +181,9 @@ namespace Common.Services
                     Title = t.Title,
                     ClicksCount = t.ClicksCount,
                     CommentsCount = t.CommentsCount,
-                    FrontPic = string.IsNullOrEmpty(t.FrontPic) ? null : StaticPicUrlHost + t.FrontPic,
+                    //FrontPic = string.IsNullOrEmpty(t.FrontPic) ? null : StaticPicUrlHost + t.FrontPic,
+                    FrontPic = !string.IsNullOrEmpty(t.FrontPic) && !t.FrontPic.StartsWith("http") ? StaticPicUrlHost + t.FrontPic : t.FrontPic,
+
                     Score = t.Score,
                     Uid = t.MedicalRecordUid,
                     Type = "MedicalRecord",
@@ -203,7 +204,7 @@ namespace Common.Services
 
         public dynamic GetMyMedicalRecords(Guid uid, string queryJson)
         {
-            string cacheKey = "GetMedicalRecords" + queryJson;
+            string cacheKey = "GetMyMedicalRecords" +uid.ToString()+ queryJson;
             try
             {
                 var res = CacheHelper.Get<List<ItemInformationDto>>(cacheKey);
@@ -331,13 +332,31 @@ namespace Common.Services
                             db.Set<MedicalRecord>().Add(c);
 
                             res = c.MedicalRecordUid.ToString();
+
+                            if (!string.IsNullOrEmpty(mr.StrFundProjectUid))
+                            {
+                                var prjuid = mr.StrFundProjectUid.ToGuid();
+                                var prj = db.Set<FundProject>().FirstOrDefault(t => t.FundProjectUid == prjuid);
+
+                                if (prj != null)
+                                {
+                                    FundMedicalRecord fmr = new FundMedicalRecord
+                                    {
+                                        MedicalRecord = c,
+                                        FundProject = prj
+                                    };
+
+                                    db.Set<FundMedicalRecord>().Add(fmr);
+                                }
+                            }
+
                         }
                         else
                         {
                             throw new Exception("用户验证失败");
                         }
                     }
-                    else
+                    else  //修改（未用）
                     {
                         
                         var mruid = mr.StrMedicalRecordUid.ToGuid();
@@ -349,6 +368,8 @@ namespace Common.Services
                     }
 
                     db.SaveChanges();
+
+                    CacheHelper.Clear("GetMyMedicalRecords");
 
                     return res;
                 }
@@ -434,7 +455,25 @@ namespace Common.Services
                             {
                                 var filelist = Function.SaveImages(httpRequest, dir, subjectUid.ToString(), dbitem.CreateTime);
 
-                                SaveImageInfo(db, filelist, subjectUid);
+                                if (filelist.Count > 0)
+                                {
+                                    var host = Function.GetHostAndApp();
+
+                                    var frontPic = host + "/" + Function.PathToRelativeUrl(filelist[0]);
+
+                                    switch (type.ToLower())
+                                    {
+                                        case "medicalrecord":
+                                            (dbitem as MedicalRecord).FrontPic = frontPic;
+                                            break;
+                                        default:
+                                            (dbitem as MedicalRecord).FrontPic = frontPic;
+                                            break;
+                                    }
+
+                                    SaveImageInfo(db, filelist, subjectUid);
+                                }
+                                
 
                                 db.SaveChanges();
                             }
@@ -696,6 +735,7 @@ namespace Common.Services
             }
         }
 
+        
 
         public dynamic GetConference(Guid uid)
         {
@@ -1037,6 +1077,146 @@ namespace Common.Services
                 throw;
             }
         }
+
+        public dynamic GetSurveys(Guid uid,string queryJson)
+        {
+            string cacheKey = "GetSurveys" + uid.ToString()+ queryJson;
+            try
+            {
+                
+                try
+                {
+                    var res = CacheHelper.Get<List<SurveyDto>>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var expression = LinqExtensions.True<Survey>();
+                    var queryParam = queryJson.ToJObject();
+
+                    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                    //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                    var query = db.Set<Survey>().Where(expression).OrderBy(t => t.Order).ThenByDescending(t => t.CreateTime);
+                    
+                    var list = Function.GetPageData(query, queryParam);
+
+                    var res = list.MapToList<SurveyDto>();
+
+                    //CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public dynamic GetSurveyQuestions(Guid uid,Guid SurveyUid,string queryJson)
+        {
+            string cacheKey = "GetSurveyQuestions" + SurveyUid.ToString();
+            try
+            {
+                try
+                {
+                    var res = CacheHelper.Get<List<SurveyQuestionDto>>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var expression = LinqExtensions.True<SurveyQuestion>();
+                    var queryParam = queryJson.ToJObject();
+
+                    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                    expression = expression.And(t => t.Survey.SurveyUid == SurveyUid);
+
+                    var query = db.Set<SurveyQuestion>().Where(expression).OrderBy(t => t.Number);
+
+                    var list = Function.GetPageData(query, queryParam);
+
+                    var res = list.MapToList<SurveyQuestionDto>();
+
+                    CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+        public string PostSurveyAnswer(Guid authid, Guid surveyUid, List<SurveyQuestionDto> answer)
+        {
+            string msg = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var user = db.Set<User>().FirstOrDefault(u => u.AuthID == authid && u.IsValid == true);
+
+                    var options = db.Set<SurveyQuestionOption>().Where(t => t.SurveyQuestion.Survey.SurveyUid == surveyUid).AsEnumerable();
+
+                    foreach (var q in answer)
+                    {
+                        var sr = new SurveyAnswer() { User = user, SurveyQuestionID = q.id };
+                        if (q.type == 1)
+                        {
+                            sr.Answer = q.chooseitem;
+                            options.Single(t => t.Value == q.chooseitem && t.SurveyQuestionID == q.id).SelectCount++;
+                        }
+                        else
+                        {
+                            var arr = q.items.Where(t => t.chosen == true).Select(t => t.value).ToArray();
+                            sr.Answer = string.Join(",", arr);
+
+                            foreach (var op in options.Where(t => t.SurveyQuestionID == q.id&&arr.Contains(t.Value)))
+                            {
+                                op.SelectCount++;
+                            }
+                        }
+
+                        db.Set<SurveyAnswer>().Add(sr);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return msg;
+        }
+
+
 
     }
 }

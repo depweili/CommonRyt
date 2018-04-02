@@ -60,6 +60,7 @@
     <Compile Include="Mappings\GeneralMap.cs" />
     <Compile Include="Mappings\IntegralMap.cs" />
     <Compile Include="Mappings\PatientMap.cs" />
+    <Compile Include="Mappings\SurveyMap.cs" />
     <Compile Include="Mappings\UserMap.cs" />
     <Compile Include="Mappings\VideoMap.cs" />
     <Compile Include="Migrations\201802110658266_InitialCreate.cs" />
@@ -105,6 +106,14 @@
     <Compile Include="Migrations\201803301716321_t10.cs" />
     <Compile Include="Migrations\201803301716321_t10.Designer.cs">
       <DependentUpon>201803301716321_t10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804020956311_t11.cs" />
+    <Compile Include="Migrations\201804020956311_t11.Designer.cs">
+      <DependentUpon>201804020956311_t11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804021309238_t12.cs" />
+    <Compile Include="Migrations\201804021309238_t12.Designer.cs">
+      <DependentUpon>201804021309238_t12.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Patient.cs" />
@@ -156,6 +165,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803301716321_t10.resx">
       <DependentUpon>201803301716321_t10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804020956311_t11.resx">
+      <DependentUpon>201804020956311_t11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804021309238_t12.resx">
+      <DependentUpon>201804021309238_t12.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

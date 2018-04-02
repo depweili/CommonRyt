@@ -147,7 +147,7 @@ namespace Common.Services.Dtos
 
         public string Content { get; set; }
 
-        public DateTime CreateTime { get; set; }
+        public string CreateTime { get; set; }
     }
 
 

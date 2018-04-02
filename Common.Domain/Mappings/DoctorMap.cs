@@ -119,5 +119,12 @@ namespace Common.Domain.Mappings
             this.Property(t => t.FrontPic).HasMaxLength(200);
         }
     }
+    
+    public class FundMedicalRecordMap : EntityTypeConfiguration<FundMedicalRecord>
+    {
+        public FundMedicalRecordMap()
+        {
+        }
+    }
 
 }

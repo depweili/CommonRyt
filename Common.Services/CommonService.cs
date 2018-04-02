@@ -162,7 +162,7 @@ namespace Common.Services
                 else
                 {
                     dbitem.ClicksCount++;
-                    db.SaveChangesAsync();
+                    db.SaveChanges();
                 }
 
                     //ArticleDto res = new ArticleDto

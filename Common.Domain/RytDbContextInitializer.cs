@@ -17,6 +17,7 @@ namespace Common.Domain
                 new IntegralGrade{  Grade=1,  Title="1"},
                 new IntegralGrade{  Grade=2,  Title="2"},
                 new IntegralGrade{  Grade=3,  Title="3"},
+                new IntegralGrade{  Grade=4,  Title="4"},
             });
 
             var HospitalData=db.Set<Hospital>().AddRange(new List<Hospital>()

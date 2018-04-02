@@ -7,45 +7,86 @@ using System.Threading.Tasks;
 namespace Common.Domain
 {
     //调研
-    public class Research : EntityBase<int>
+    public class Survey : EntityBase<int>
     {
+        public Survey()
+        {
+            SurveyUid = Guid.NewGuid();
+        }
+        public Guid SurveyUid { get; set; }
+
+        public int Type { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
+
+        public string FrontPic { get; set; }
+
+        public DateTime BeginDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        public int Count { get; set; }
+
+        public int? Order { get; set; }
+
+        public string Memo { get; set; }
+    }
+
+    public class UserAuthSurvey : EntityBase<int>
+    {
+        public int SurveyID { get; set; }
+        public virtual Survey Survey { get; set; }
+
+        public int UserID { get; set; }
+        public virtual User User { get; set; }
+    }
+
+    public class SurveyQuestion : EntityBase<int>
+    {
+        public int SurveyID { get; set; }
+        public virtual Survey Survey { get; set; }
+
+        public int Number { get; set; }
+
+        public string Title { get; set; }
+
+        public int Type { get; set; }
+
+        public virtual ICollection<SurveyQuestionOption> items { get; set; }
+
+
+    }
+
+    public class SurveyQuestionOption : EntityBase<int>
+    {
+        public int SurveyQuestionID { get; set; }
+        public virtual SurveyQuestion SurveyQuestion { get; set; }
+
+        public string Value { get; set; }
         public string Content { get; set; }
 
+        public int SelectCount { get; set; }
+
+        public int? Order { get; set; }
     }
 
-    public class ResearchSubject : EntityBase<int>
-    {
-        public int ResearchID { get; set; }
-        public virtual Research Research{ get; set; }
-        public string Subject { get; set; }
-
-        public string Answer { get; set; }
-    }
-
-    public class ResearchSubjectOption : EntityBase<int>
-    {
-        public int ResearchSubjectID { get; set; }
-        public virtual ResearchSubject ResearchSubject { get; set; }
-
-        public string Key { get; set; }
-        public string Value { get; set; }
-
-        
-        public int Order { get; set; }
-    }
-
-    public class ResearchResult : EntityBase<int>
+    public class SurveyAnswer : EntityBase<int>
     {
         public int UserID { get; set; }
         public virtual User User { get; set; }
 
-        public int ResearchSubjectID { get; set; }
-        public virtual ResearchSubject ResearchSubject { get; set; }
+        public int SurveyQuestionID { get; set; }
+        public virtual SurveyQuestion SurveyQuestion { get; set; }
 
-        public int ResearchSubjectOptionID { get; set; }
-        public virtual ResearchSubjectOption ResearchSubjectOption { get; set; }
+        //public int SurveyQuestionOptionID { get; set; }
+        //public virtual SurveyQuestionOption SurveyQuestionOption { get; set; }
+        //public bool IsSelect { get; set; }
+
+        public string Answer { get; set; }
+
+        public string Memo { get; set; }
     }
+    
 
     public class Conference : SubjectEntity<int>
     {

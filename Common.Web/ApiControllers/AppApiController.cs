@@ -1,6 +1,7 @@
 ﻿using Common.Services;
 using Common.Services.Dtos;
 using Common.Util;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -112,6 +113,37 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
+        /// <summary>
+        /// 重设密码
+        /// </summary>
+        /// <param name="reset"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [Route("api/App/ResetPwd")]
+        [HttpPost]
+        public IHttpActionResult ResetPwd(RegisterDto reset)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                UtilityService ws = new UtilityService();
+
+                string data = ws.ResetPwd(reset);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
 
 
         /// <summary>
@@ -772,5 +804,99 @@ namespace Common.Web.ApiControllers
         }
 
         #endregion
+
+        #region 调研
+        
+        /// <summary>
+        /// 调研列表(*)
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        //[AuthFilter]
+        [Route("api/App/Surveys")]
+        [HttpGet]
+        public IHttpActionResult GetSurveys(string queryJson="")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetSurveys(uid, queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 调研详情(*)
+        /// </summary>
+        /// <param name="SurveyUid"></param>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        //[AuthFilter]
+        [Route("api/App/SurveyDetail")]
+        [HttpGet]
+        public IHttpActionResult GetSurveyDetail(Guid SurveyUid,string queryJson="")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetSurveyQuestions(uid, SurveyUid, queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 提交答案（*）
+        /// {SurveyUid:xxxxx,Answer:data}
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        //[AuthFilter]
+        [Route("api/App/SurveyAnswer")]
+        [HttpPost]
+        public IHttpActionResult PostSurveyAnswer(dynamic obj)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var SurveyUid = Convert.ToString(obj.SurveyUid).ToGuid();
+                var Answer = JsonConvert.DeserializeObject<List<SurveyQuestionDto>>(Convert.ToString(obj.Answer));
+                var data = service.PostSurveyAnswer(uid, SurveyUid, Answer);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+        #endregion
+
+
+
     }
 }

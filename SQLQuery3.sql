@@ -1,0 +1,5 @@
+﻿4	62695280-3f05-4c21-b675-d97a6d6980c7	第一课 汇市基础	NULL	NULL	http://www.hexieyinan.com/SxcWebApi/Video/1huishijichu.mp4	http://www.hexieyinan.com/SxcWebApi/Video/img/1huishijichu.jpg	0	1	True	NULL	2
+6	d1497ccb-5669-4e99-a8e3-164b5f112e90	第二课 K线基础知识.	NULL	NULL	http://www.hexieyinan.com/SxcWebApi/Video/21K.mp4	http://www.hexieyinan.com/SxcWebApi/Video/img/21K.jpg	0	2	True	NULL	2
+12	d1497ccb-5669-4e99-a8e3-164b5f112e90	第三课 K线基本及组合形态	NULL	NULL	http://www.hexieyinan.com/SxcWebApi/Video/32K.mp4	http://www.hexieyinan.com/SxcWebApi/Video/img/32K.jpg	0	3	True	NULL	2
+13	d1497ccb-5669-4e99-a8e3-164b5f112e90	第四课 K线深度解读	NULL	NULL	http://www.hexieyinan.com/SxcWebApi/Video/43K.mp4	http://www.hexieyinan.com/SxcWebApi/Video/img/43K.jpg	0	4	True	NULL	2
+14	d1497ccb-5669-4e99-a8e3-164b5f112e90	第五课 黄金三角战法上	NULL	NULL	http://www.hexieyinan.com/SxcWebApi/Video/5shang.mp4	http://www.hexieyinan.com/SxcWebApi/Video/img/5shang.jpg	0	5	True	NULL	2
