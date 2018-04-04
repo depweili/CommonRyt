@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Util;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +23,10 @@ namespace Common.Services.Dtos
         public int Count { get; set; }
 
         public bool? IsValid { get; set; }
+
+        public bool IsFinish { get; set; }
+
+        public bool IsAnswer { get; set; }
     }
 
     public class SurveyQuestionDto
@@ -45,5 +51,10 @@ namespace Common.Services.Dtos
         public string value { get; set; }
         public string content { get; set; }
         public bool chosen { get; set; }
+
+        public int selectcount { get; set; }
+
+        [JsonConverter(typeof(DecimalDigitsConverter))]
+        public decimal percentage { get; set; }
     }
 }

@@ -170,7 +170,7 @@ namespace Common.Services
 
                     var querypm = db.Set<FundMedicalRecord>().Where(expression1).Select(t => t.MedicalRecordID);
 
-                    expression.And(t => querypm.Contains(t.Id));
+                    expression = expression.And(t => querypm.Contains(t.Id));
                 }
 
                 var StaticPicUrlHost = Function.GetStaticPicUrlHost();
@@ -244,7 +244,8 @@ namespace Common.Services
                     Title = t.Title,
                     ClicksCount = t.ClicksCount,
                     CommentsCount = t.CommentsCount,
-                    FrontPic = string.IsNullOrEmpty(t.FrontPic) ? null : StaticPicUrlHost + t.FrontPic,
+                    //FrontPic = string.IsNullOrEmpty(t.FrontPic) ? null : StaticPicUrlHost + t.FrontPic,
+                    FrontPic = !string.IsNullOrEmpty(t.FrontPic) && !t.FrontPic.StartsWith("http") ? StaticPicUrlHost + t.FrontPic : t.FrontPic,
                     Score = t.Score,
                     Uid = t.MedicalRecordUid,
                     Type = "MedicalRecord",
@@ -459,7 +460,7 @@ namespace Common.Services
                                 {
                                     var host = Function.GetHostAndApp();
 
-                                    var frontPic = host + "/" + Function.PathToRelativeUrl(filelist[0]);
+                                    var frontPic = host + "/" + Function.PathToRelativeUrl(filelist[0]).TrimStart('/');
 
                                     switch (type.ToLower())
                                     {
@@ -779,6 +780,8 @@ namespace Common.Services
             }
         }
 
+        
+
         public string PostAttentionConference(Guid authid, Guid conferenceUid)
         {
             string msg = string.Empty;
@@ -1080,6 +1083,7 @@ namespace Common.Services
 
         public dynamic GetSurveys(Guid uid,string queryJson)
         {
+            //if (uid == default(Guid)) { uid = new Guid("24628799-b071-4c7d-a900-bc5ab048a022"); }
             string cacheKey = "GetSurveys" + uid.ToString()+ queryJson;
             try
             {
@@ -1098,25 +1102,84 @@ namespace Common.Services
                     throw;
                 }
 
+                //using (var db = base.NewDB())
+                //{
+                //    var expression = LinqExtensions.True<Survey>();
+                //    var queryParam = queryJson.ToJObject();
+
+                //    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+                    
+
+                //    //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                //    var query = db.Set<Survey>().Where(expression).OrderBy(t => t.Order).ThenByDescending(t => t.CreateTime);
+                    
+                //    var list = Function.GetPageData(query, queryParam);
+
+                //    var res = list.MapToList<SurveyDto>();
+
+                //    //CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
+
+                //    return res;
+                //}
+
                 using (var db = base.NewDB())
                 {
-                    var expression = LinqExtensions.True<Survey>();
+                    db.Database.Log = LogHelper.Info;
+
                     var queryParam = queryJson.ToJObject();
 
-                    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+                    var user = db.Set<User>().FirstOrDefault(t => t.AuthID == uid);
 
-                    //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+                    if (user != null)
+                    {
+                        var expression = LinqExtensions.True<Survey>();
+                        expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
 
-                    var query = db.Set<Survey>().Where(expression).OrderBy(t => t.Order).ThenByDescending(t => t.CreateTime);
+                        var expression1 = LinqExtensions.True<SurveyAuth>();
+                        expression1 = expression1.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+                        expression1 = expression1.And(t => t.UserID == user.Id);
+
+                        //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                        var query = from s in db.Set<Survey>().Where(expression)
+                                    join u in db.Set<SurveyAuth>().Where(expression1) on s.Id equals u.SurveyID into su
+                                    from c in su.DefaultIfEmpty()
+                                    join a in db.Set<SurveyUser>().Where(t => t.UserID == user.Id) on s.Id equals a.SurveyID into sa
+                                    from d in sa.DefaultIfEmpty()
+                                    where s.Type == 0 || c.User != null
+                                    orderby s.CreateTime descending
+                                    select new { 
+                                        s.SurveyUid,
+                                        s.Title,
+                                        s.Description,
+                                        s.FrontPic,
+                                        s.BeginDate,
+                                        s.EndDate,
+                                        s.Count,
+                                        s.IsValid,
+                                        IsFinish = ((s.EndDate ?? DateTime.Now) > DateTime.Now),
+                                        IsAnswer = (d.User != null)
+                                    };
+
+                        var list = Function.GetPageData(query, queryParam);
+
+                        var temp = list.ToList();
+
+                        var res = list.MapToList<SurveyDto>();
+
+                        //CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
+
+                        return res;
+                    }
+                    else
+                    {
+                        throw new Exception("无效用户");
+                    }
                     
-                    var list = Function.GetPageData(query, queryParam);
-
-                    var res = list.MapToList<SurveyDto>();
-
-                    //CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
-
-                    return res;
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -1179,9 +1242,13 @@ namespace Common.Services
             {
                 using (var db = base.NewDB())
                 {
+                    db.Database.Log = LogHelper.Info;
+
                     var user = db.Set<User>().FirstOrDefault(u => u.AuthID == authid && u.IsValid == true);
 
-                    var options = db.Set<SurveyQuestionOption>().Where(t => t.SurveyQuestion.Survey.SurveyUid == surveyUid).AsEnumerable();
+                    var survey = db.Set<Survey>().FirstOrDefault(t => t.SurveyUid == surveyUid);
+
+                    var options = db.Set<SurveyQuestionOption>().Where(t => t.SurveyQuestion.SurveyID == survey.Id).ToList();
 
                     foreach (var q in answer)
                     {
@@ -1202,8 +1269,11 @@ namespace Common.Services
                             }
                         }
 
+                        
+
                         db.Set<SurveyAnswer>().Add(sr);
                     }
+                    survey.Count++;
 
                     db.SaveChanges();
                 }
@@ -1214,6 +1284,56 @@ namespace Common.Services
             }
 
             return msg;
+        }
+
+        public dynamic GetSurveyStatistics(Guid SurveyUid,string queryJson)
+        {
+            string cacheKey = "GetSurveyStatistics" + SurveyUid.ToString();
+            try
+            {
+                try
+                {
+                    var res = CacheHelper.Get<List<SurveyQuestionDto>>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var survey = db.Set<Survey>().FirstOrDefault(t => t.SurveyUid == SurveyUid);
+
+                    var expression = LinqExtensions.True<SurveyQuestion>();
+                    var queryParam = queryJson.ToJObject();
+
+                    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                    expression = expression.And(t => t.SurveyID == survey.Id);
+
+                    var query = db.Set<SurveyQuestion>().Where(expression).OrderBy(t => t.Number);
+
+                    var list = Function.GetPageData(query, queryParam);
+
+                    var res = list.MapToList<SurveyQuestionDto>();
+
+                    res.ForEach(t => t.items.ForEach(i => i.percentage = (decimal)i.selectcount / survey.Count * 100));
+
+                    CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
 

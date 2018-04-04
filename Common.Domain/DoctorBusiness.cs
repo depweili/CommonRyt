@@ -32,7 +32,7 @@ namespace Common.Domain
         public string Memo { get; set; }
     }
 
-    public class UserAuthSurvey : EntityBase<int>
+    public class SurveyAuth : EntityBase<int>
     {
         public int SurveyID { get; set; }
         public virtual Survey Survey { get; set; }
@@ -86,7 +86,20 @@ namespace Common.Domain
 
         public string Memo { get; set; }
     }
-    
+
+    public class SurveyUser : EntityBase<int>
+    {
+        public int SurveyID { get; set; }
+        public virtual Survey Survey { get; set; }
+
+        public int UserID { get; set; }
+        public virtual User User { get; set; }
+
+        public int State { get; set; }
+
+        public string Memo { get; set; }
+    }
+
 
     public class Conference : SubjectEntity<int>
     {

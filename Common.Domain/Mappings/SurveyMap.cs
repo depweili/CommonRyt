@@ -44,4 +44,19 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Memo).HasMaxLength(100);
         }
     }
+
+    public class SurveyUserMap : EntityTypeConfiguration<SurveyUser>
+    {
+        public SurveyUserMap()
+        {
+            this.Property(t => t.Memo).HasMaxLength(100);
+        }
+    }
+
+    public class SurveyAuthMap : EntityTypeConfiguration<SurveyAuth>
+    {
+        public SurveyAuthMap()
+        {
+        }
+    }
 }

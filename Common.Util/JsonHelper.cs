@@ -44,4 +44,49 @@ namespace Common.Util
         }
     }
     #endregion
+
+    #region 数字小数位
+    public class DecimalDigitsConverter : JsonConverter
+    {
+        public virtual int Digits { get; private set; }
+
+        public DecimalDigitsConverter()
+        {
+            this.Digits = 2;
+        }
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(decimal);
+        }
+
+        //public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        //{
+        //    return reader.Value;
+        //}
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new NotImplementedException("Unnecessary because CanRead is false. The type will skip the converter.");
+        }
+
+        public override bool CanRead
+        {
+            get { return false; }
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+            }
+            else
+            {
+                var formatter = ((decimal)value).ToString("N" + Digits.ToString());
+                writer.WriteValue(formatter);
+            }
+        }
+    }
+
+    #endregion
 }

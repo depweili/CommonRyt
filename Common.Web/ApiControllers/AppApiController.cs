@@ -870,7 +870,7 @@ namespace Common.Web.ApiControllers
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        //[AuthFilter]
+        [AuthFilter]
         [Route("api/App/SurveyAnswer")]
         [HttpPost]
         public IHttpActionResult PostSurveyAnswer(dynamic obj)
@@ -880,9 +880,39 @@ namespace Common.Web.ApiControllers
             {
                 var service = new AppService();
                 var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
-                var SurveyUid = Convert.ToString(obj.SurveyUid).ToGuid();
+                string strSurveyUid = Convert.ToString(obj.SurveyUid);
+                var SurveyUid = strSurveyUid.ToGuid();
                 var Answer = JsonConvert.DeserializeObject<List<SurveyQuestionDto>>(Convert.ToString(obj.Answer));
                 var data = service.PostSurveyAnswer(uid, SurveyUid, Answer);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 调研结果
+        /// </summary>
+        /// <param name="SurveyUid"></param>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        //[AuthFilter]
+        [Route("api/App/SurveyStatistics")]
+        [HttpGet]
+        public IHttpActionResult GetSurveyStatistics(Guid SurveyUid,string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetSurveyStatistics(SurveyUid, queryJson);
 
                 res.resData = data;
             }
