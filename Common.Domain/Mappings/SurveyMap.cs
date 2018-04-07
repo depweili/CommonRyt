@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Util;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
@@ -50,6 +51,8 @@ namespace Common.Domain.Mappings
         public SurveyUserMap()
         {
             this.Property(t => t.Memo).HasMaxLength(100);
+            this.Property(t => t.SurveyID).IsUnique("UKSurveyUser", 1);
+            this.Property(t => t.UserID).IsUnique("UKSurveyUser", 2);
         }
     }
 
@@ -57,6 +60,8 @@ namespace Common.Domain.Mappings
     {
         public SurveyAuthMap()
         {
+            this.Property(t => t.SurveyID).IsUnique("UKSurveyAuth", 1);
+            this.Property(t => t.UserID).IsUnique("UKSurveyAuth", 2);
         }
     }
 }

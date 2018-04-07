@@ -40,7 +40,8 @@ namespace Common.Services
                         isverified = userpf.IsVerified ?? false,
                         birthday = userpf.BirthDay,
                         area = userpf.Area,
-                        username=user.UserName
+                        username=user.UserName,
+                        avatarurl= userpf.AvatarUrl
                     };
 
                     return userpfdto;
@@ -50,6 +51,53 @@ namespace Common.Services
                     return null;
                 }
             }
+        }
+
+
+        public string SaveUserProfile(UserProfileDto userpfdto)
+        {
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var user = db.Set<User>().FirstOrDefault(u => u.AuthID == userpfdto.authid);
+
+                    if (user != null)
+                    {
+                        var userpf = user.UserProfile;
+                        userpf.NickName = userpfdto.nickname;
+                        userpf.Address = userpfdto.address;
+                        userpf.BirthDay = userpfdto.birthday;
+                        userpf.Area = userpfdto.area;
+                        userpf.MobilePhone = userpfdto.mobilephone;
+                        userpf.Gender = userpfdto.gender;
+
+                        if (!(userpf.IsVerified ?? false))
+                        {
+                            userpf.RealName = userpfdto.realname;
+                            
+                            userpf.IDCard = userpfdto.idcard;
+                        }
+                        else
+                        {
+                            return "已经验证，不可修改";
+                        }
+
+                        db.SaveChanges();
+
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return "未找到对应用户";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return "保存失败";
+            }
+
         }
 
         public string PostComment(Guid authid, CommentDto comment)
@@ -66,12 +114,26 @@ namespace Common.Services
                         Comment c = new Comment { Content = comment.Content, SubjectKey = comment.SubjectKey, User = user };
                         db.Set<Comment>().Add(c);
 
+
+                        switch (comment.Type)
+                        {
+                            case "Article":
+                                db.Set<Article>().FirstOrDefault(t => t.ArticleUID == comment.SubjectKey).CommentsCount++;
+                                break;
+                            case "MedicalRecord":
+                                db.Set<MedicalRecord>().FirstOrDefault(t => t.MedicalRecordUid == comment.SubjectKey).CommentsCount++;
+                                break;
+                            default:
+                                break;
+                        }
                         db.SaveChanges();
                     }
                     else
                     {
                         msg = "请登陆后评论";
                     }
+
+                    
                 }
             }
             catch (Exception)
@@ -126,6 +188,50 @@ namespace Common.Services
 
                 throw;
             }
+        }
+
+        public string PostDoctorCertified(Guid authid,DoctorCertifiedDto doctordto)
+        {
+            string res = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var doctor = db.Set<Doctor>().FirstOrDefault(u => u.User.AuthID == authid && u.IsValid == true);
+
+                    var department = db.Set<MedicineDepartment>().FirstOrDefault(t => t.HospitalID == doctordto.HospitalID && t.MedicineCategoryID == doctordto.MedicineCategoryID);
+
+                    if (doctor != null)
+                    {
+                        if (department == null)
+                        {
+                            department = db.Set<MedicineDepartment>().Add(new MedicineDepartment() { MedicineCategoryID = doctordto.MedicineCategoryID, HospitalID = doctordto.HospitalID });
+
+                            doctor.MedicineDepartment = department;
+
+                            doctor.Name = doctordto.Name;
+
+                            doctor.Expert = doctordto.Expert;
+
+                            doctor.InvitationCode = doctordto.InvitationCode;
+                        }
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        throw new Exception("失败");
+                    }
+
+                    res = doctor.Uid.ToString();
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return res;
         }
 
         public dynamic GetMedicalRecords(string queryJson)
@@ -262,6 +368,8 @@ namespace Common.Services
                 return res;
             }
         }
+
+        
 
         public dynamic GetMedicalRecord(Guid uid)
         {
@@ -423,7 +531,7 @@ namespace Common.Services
             return res;
         }
 
-        public string UploadImages(HttpRequest httpRequest)
+        public string UploadImages(Guid uid,HttpRequest httpRequest)
         {
             string res = string.Empty;
             try
@@ -433,11 +541,15 @@ namespace Common.Services
                     var subjectUid = httpRequest.Form["subjectUid"].ToGuid();
                     var type= httpRequest.Form["type"];
 
+                    string[] namefilter = new string[] { };
+
                     if (!string.IsNullOrEmpty(type) && subjectUid != default(Guid))
                     {
                         using (var db = base.NewDB())
                         {
-                            EntityBase<int> dbitem;
+                            EntityBase<int> dbitem = null;
+
+                            var user = db.Set<User>().FirstOrDefault(t => t.AuthID == uid);
 
                             var dir = string.Empty;
                             switch (type.ToLower())
@@ -446,15 +558,24 @@ namespace Common.Services
                                     dir = "MedicalRecord";
                                     dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
                                     break;
+                                case "useravatar":
+                                    dir = "Avatar";
+                                    dbitem = db.Set<UserProfile>().Single(t => t.User.AuthID == subjectUid);
+                                    break;
+                                case "doctorcertified":
+                                    dir = "DoctorCertified";
+                                    dbitem = db.Set<Doctor>().Single(t => t.Uid == subjectUid);
+                                    namefilter =  new string[]{ "file_zy", "file_zc" };
+                                    break;
                                 default:
-                                    dir = "MedicalRecord";
-                                    dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
+                                    //dir = "MedicalRecord";
+                                    //dbitem = db.Set<MedicalRecord>().Single(t => t.MedicalRecordUid == subjectUid);
                                     break;
                             }
 
-                            if (!string.IsNullOrEmpty(dir))
+                            if (!string.IsNullOrEmpty(dir)&& dbitem!=null)
                             {
-                                var filelist = Function.SaveImages(httpRequest, dir, subjectUid.ToString(), dbitem.CreateTime);
+                                var filelist = Function.SaveImages(httpRequest, dir, subjectUid.ToString(), dbitem.CreateTime, namefilter);
 
                                 if (filelist.Count > 0)
                                 {
@@ -467,12 +588,19 @@ namespace Common.Services
                                         case "medicalrecord":
                                             (dbitem as MedicalRecord).FrontPic = frontPic;
                                             break;
+                                        case "useravatar":
+                                            (dbitem as UserProfile).AvatarUrl = frontPic;
+                                            break;
+                                        case "doctorcertified":
+                                            (dbitem as Doctor).CertificatePicZy = filelist.Any(t => t.Contains("file_zy")) ? host + "/" + Function.PathToRelativeUrl(filelist.FirstOrDefault(t => t.Contains("file_zy"))).TrimStart('/') : "";
+                                            (dbitem as Doctor).CertificatePicZc = filelist.Any(t => t.Contains("file_zc")) ? host + "/" + Function.PathToRelativeUrl(filelist.FirstOrDefault(t => t.Contains("file_zc"))).TrimStart('/') : "";
+                                            break;
                                         default:
-                                            (dbitem as MedicalRecord).FrontPic = frontPic;
+                                            //(dbitem as MedicalRecord).FrontPic = frontPic;
                                             break;
                                     }
 
-                                    SaveImageInfo(db, filelist, subjectUid);
+                                    SaveImageInfo(db, filelist, subjectUid, user.Id);
                                 }
                                 
 
@@ -509,7 +637,7 @@ namespace Common.Services
 
 
         //记录图片信息
-        private void SaveImageInfo(DbContext db, List<string> files, Guid subjectUid)
+        private void SaveImageInfo(DbContext db, List<string> files, Guid subjectUid,int? userid=null)
         {
             try
             {
@@ -520,6 +648,7 @@ namespace Common.Services
                         ImageName = Path.GetFileName(f),
                         SubjectKey = subjectUid,
                         ImagePath = Function.PathToRelativeUrl(f),
+                        UserID = userid
                     };
 
                     db.Set<ImageInfo>().Add(image);
@@ -716,7 +845,8 @@ namespace Common.Services
                         CreateTime = t.CreateTime,
                         Location = t.City,
                         BeginDate = t.BeginDate,
-                        EndDate = t.EndDate
+                        EndDate = t.EndDate,
+                        ArticleUid=t.Article.ArticleUID.ToString()
                     });
 
 
@@ -938,6 +1068,11 @@ namespace Common.Services
 
                     expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
 
+                    if (!type.IsEmpty())
+                    {
+                        expression = expression.And(t => t.Type == type);
+                    }
+
                     //if (!queryParam["MedicineCategory"].IsEmpty() && queryParam["MedicineCategory"].ToString() != "-1")
                     //{
                     //    int keyword = queryParam["MedicineCategory"].ToInt();
@@ -951,7 +1086,8 @@ namespace Common.Services
                     {
                         //Author = t.Author,
                         Title = t.Title,
-                        FrontPic = string.IsNullOrEmpty(t.PicUrl) ? null : StaticPicUrlHost + t.PicUrl,//t.PicUrl,
+                        //FrontPic = string.IsNullOrEmpty(t.PicUrl) ? null : StaticPicUrlHost + t.PicUrl,//t.PicUrl,
+                        FrontPic = !string.IsNullOrEmpty(t.PicUrl) && !t.PicUrl.StartsWith("http") ? StaticPicUrlHost + t.PicUrl : t.PicUrl,
                         Uid = t.Uid,
                         ArticleUid=t.ArticleUid,
                         Type = t.Type,
@@ -1248,6 +1384,11 @@ namespace Common.Services
 
                     var survey = db.Set<Survey>().FirstOrDefault(t => t.SurveyUid == surveyUid);
 
+                    if (db.Set<SurveyUser>().Any(t => t.UserID == user.Id && t.SurveyID == survey.Id))
+                    {
+                        return "请勿重复作答";
+                    }
+
                     var options = db.Set<SurveyQuestionOption>().Where(t => t.SurveyQuestion.SurveyID == survey.Id).ToList();
 
                     foreach (var q in answer)
@@ -1274,6 +1415,8 @@ namespace Common.Services
                         db.Set<SurveyAnswer>().Add(sr);
                     }
                     survey.Count++;
+
+                    db.Set<SurveyUser>().Add(new SurveyUser() { SurveyID = survey.Id, UserID = user.Id });
 
                     db.SaveChanges();
                 }

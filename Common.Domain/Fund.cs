@@ -19,6 +19,10 @@ namespace Common.Domain
         public string Introduction { get; set; }
 
         public decimal Order { get; set; }
+
+        public int? ArticleID { get; set; }
+
+        public virtual Article Article { get; set; }
     }
 
     public class FundProject : EntityBase<int>
@@ -38,7 +42,11 @@ namespace Common.Domain
         public string Introduction { get; set; }
 
         public decimal? Order { get; set; }
-        
+
+        public int? ArticleID { get; set; }
+
+        public virtual Article Article { get; set; }
+
 
     }
 

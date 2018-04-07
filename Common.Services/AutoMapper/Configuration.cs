@@ -20,6 +20,8 @@ namespace Common.Services.AutoMapper
                 //cfg.AddProfile<Profiles.OrderProfile>();
                 //cfg.AddProfile<Profiles.CalendarEventProfile>();
 
+                cfg.CreateMap<Hospital, DicDto>();
+
                 cfg.CreateMap<Hospital, HospitalDto>();
                 cfg.CreateMap<MedicineCategory, MedicineCategoryDto>();
                 cfg.CreateMap<Doctor, DoctorDto>()
@@ -57,9 +59,11 @@ namespace Common.Services.AutoMapper
                 cfg.CreateMap<Comment, CommentListDto>()
                 .ForMember(t => t.UserName, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.User.UserProfile.NickName) ? StringHelper.ReplaceWithSpecialChar(src.User.UserName, 3, 4, '*') : src.User.UserProfile.NickName))
                 .ForMember(t => t.AuthID, opt => opt.MapFrom(src => src.User.AuthID))
-                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => src.User.UserProfile.AvatarUrl))
+                //.ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => StringHelper.Nvl(src.User.UserProfile.AvatarUrl, "useravatar.png")))
+                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.User.UserProfile.AvatarUrl) ? Function.GetStaticPicUrl("useravatar.png", null): src.User.UserProfile.AvatarUrl))
                 .ForMember(t => t.CreateTime, opt => opt.MapFrom(src => src.CreateTime.ToAgoDateFomat()));
-
+                //.ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => StringHelper.Nvl(src.User.UserProfile.AvatarUrl, Function.GetStaticPicUrl("useravatar.png", null))))
+                //.ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => StringHelper.Nvl(src.User.UserProfile.AvatarUrl, "useravatar.png")))
 
                 cfg.CreateMap<MedicalRecordDto, MedicalRecord>()
                 .ForMember(t => t.CreateTime, opt => opt.Ignore())
@@ -68,7 +72,8 @@ namespace Common.Services.AutoMapper
                 cfg.CreateMap<MedicalRecord, MedicalRecordDto>()
                 .ForMember(t => t.StrMedicalRecordUid, opt => opt.MapFrom(src => src.MedicalRecordUid.ToString()));
 
-                cfg.CreateMap<Conference, ConferenceDto>();
+                cfg.CreateMap<Conference, ConferenceDto>()
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()));
 
                 cfg.CreateMap<VideoInfo, VideoInfoDto>();
 
@@ -79,7 +84,11 @@ namespace Common.Services.AutoMapper
 
                 cfg.CreateMap<SurveyQuestionOption, SurveyQuestionOptionDto>();
 
-                
+                cfg.CreateMap<Fund, FundDto>()
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()));
+
+                cfg.CreateMap<FundProject, FundProjectDto>()
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()));
 
             });
 

@@ -99,6 +99,13 @@ namespace Common.Domain
 
         public decimal Score { get; set; }
 
+        public string InvitationCode { get; set; }
+
+        public string CertificatePicZy { get; set; }
+
+        public string CertificatePicZc { get; set; }
+
+
     }
 
     public class MedicalRecord : SubjectEntity<int>

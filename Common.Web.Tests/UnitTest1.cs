@@ -224,10 +224,10 @@ SELECT * FROM temp");
         {
             using (var db = new CommonContext())
             {
-                var s = new Survey { Title = "测试1", BeginDate = DateTime.Now, Description = "测试1111111" };
+                var s = new Survey { Title = "测试特殊3", BeginDate = DateTime.Now, Description = "测试33333333", Type=1 };
 
                 var sq = new List<SurveyQuestion>() {
-                    new SurveyQuestion(){  Survey=s, Number=1, Title="问题1", Type=1,
+                    new SurveyQuestion(){  Survey=s, Number=1, Title="问题5", Type=1,
                         items =new List<SurveyQuestionOption>(){
                             new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
                             new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
@@ -235,7 +235,7 @@ SELECT * FROM temp");
                             new SurveyQuestionOption(){  Value="D", Content="dddddddd"},
                         }
                     },
-                    new SurveyQuestion(){  Survey=s, Number=2, Title="问题2", Type=2,
+                    new SurveyQuestion(){  Survey=s, Number=2, Title="问题6", Type=2,
                         items =new List<SurveyQuestionOption>(){
                             new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
                             new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
@@ -248,10 +248,10 @@ SELECT * FROM temp");
                 db.Set<Survey>().Add(s);
                 db.Set<SurveyQuestion>().AddRange(sq);
 
-                s = new Survey { Title = "测试2", BeginDate = DateTime.Now, Description = "测试2222222" };
+                s = new Survey { Title = "测试特殊4", BeginDate = DateTime.Now, Description = "测试444444444",Type=1 };
 
                 sq = new List<SurveyQuestion>() {
-                    new SurveyQuestion(){  Survey=s, Number=1, Title="问题111", Type=1,
+                    new SurveyQuestion(){  Survey=s, Number=1, Title="问题7", Type=1,
                         items =new List<SurveyQuestionOption>(){
                             new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
                             new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},
@@ -259,7 +259,7 @@ SELECT * FROM temp");
                             new SurveyQuestionOption(){  Value="D", Content="dddddddd"},
                         }
                     },
-                    new SurveyQuestion(){  Survey=s, Number=2, Title="问题222", Type=2,
+                    new SurveyQuestion(){  Survey=s, Number=2, Title="问题8", Type=2,
                         items =new List<SurveyQuestionOption>(){
                             new SurveyQuestionOption(){  Value="A", Content="aaaaaaa"},
                             new SurveyQuestionOption(){  Value="B", Content="bbbbbbb"},

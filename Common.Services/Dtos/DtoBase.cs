@@ -21,4 +21,14 @@ namespace Common.Services.Dtos
         [JsonConverter(typeof(CommonDateTimeConverter))]
         public DateTime? CreateTime { get; set; }
     }
+
+
+    public class DicDto
+    {
+        public string uid { get; set; }
+
+        public int id { get; set; }
+
+        public string name { get; set; }
+    }
 }

@@ -119,6 +119,18 @@
     <Compile Include="Migrations\201804040748401_t13.Designer.cs">
       <DependentUpon>201804040748401_t13.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804050537508_t14.cs" />
+    <Compile Include="Migrations\201804050537508_t14.Designer.cs">
+      <DependentUpon>201804050537508_t14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804071953589_t15.cs" />
+    <Compile Include="Migrations\201804071953589_t15.Designer.cs">
+      <DependentUpon>201804071953589_t15.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804072044476_t16.cs" />
+    <Compile Include="Migrations\201804072044476_t16.Designer.cs">
+      <DependentUpon>201804072044476_t16.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="RytDbContextInitializer.cs" />
@@ -178,6 +190,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804040748401_t13.resx">
       <DependentUpon>201804040748401_t13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804050537508_t14.resx">
+      <DependentUpon>201804050537508_t14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804071953589_t15.resx">
+      <DependentUpon>201804071953589_t15.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804072044476_t16.resx">
+      <DependentUpon>201804072044476_t16.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

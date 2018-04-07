@@ -36,5 +36,16 @@ namespace Common.Util
 
             return value;
         }
+
+        //automapper中value如果是数据库null值则无法进入，空则可以
+        public static string Nvl(string value, string replace)
+        {
+            return string.IsNullOrEmpty(value) ? replace : value;
+        }
+
+        public static string Nvl2(string value, string replace, string replace2)
+        {
+            return string.IsNullOrEmpty(value) ? replace2 : replace;
+        }
     }
 }

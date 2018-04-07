@@ -311,7 +311,7 @@ namespace Common.Services
         }
 
 
-        public static List<string> SaveImages(HttpRequest httpRequest, string subdir, string namekey, DateTime createtime)
+        public static List<string> SaveImages(HttpRequest httpRequest, string subdir, string namekey, DateTime createtime,string [] namefilter)
         {
             var path = Function.GetImageStorageDirectory(subdir, createtime);
             List<string> files = new List<string>();
@@ -319,24 +319,48 @@ namespace Common.Services
             try
             {
                 var index = 1;
-                //foreach (var file in httpRequest.Files)
-                for (int i = 0; i < httpRequest.Files.Count; i++)
+                if (namefilter.Length > 0)
                 {
-                    var postedFile = httpRequest.Files[i];
-                    if (postedFile == null) continue;
+                    foreach (var file in httpRequest.Files.AllKeys.Where(t => namefilter.Contains(t)))
+                    {
+                        var postedFile = httpRequest.Files[file];
 
-                    var newFileName = Path.GetExtension(postedFile.FileName);//获取后缀名  
-                    newFileName = namekey + "_" + index.ToString() + newFileName;
-                    var filePath = path + newFileName;
-                    index++;
-                    //if (File.Exists(filePath))
-                    //{
-                    //    File.Delete(filePath);
-                    //}
-                    postedFile.SaveAs(filePath);
+                        if (postedFile == null) continue;
 
-                    files.Add(filePath);
+                        var newFileName = Path.GetExtension(postedFile.FileName);//获取后缀名  
+                        newFileName = namekey + "_" + file + newFileName;
+                        var filePath = path + newFileName;
+                        //if (File.Exists(filePath))
+                        //{
+                        //    File.Delete(filePath);
+                        //}
+                        postedFile.SaveAs(filePath);
+
+                        files.Add(filePath);
+                    }
                 }
+                else
+                {
+                    //foreach (var file in httpRequest.Files.AllKeys)
+                    for (int i = 0; i < httpRequest.Files.Count; i++)
+                    {
+                        var postedFile = httpRequest.Files[i];
+                        if (postedFile == null) continue;
+
+                        var newFileName = Path.GetExtension(postedFile.FileName);//获取后缀名  
+                        newFileName = namekey + "_" + index.ToString() + newFileName;
+                        var filePath = path + newFileName;
+                        index++;
+                        //if (File.Exists(filePath))
+                        //{
+                        //    File.Delete(filePath);
+                        //}
+                        postedFile.SaveAs(filePath);
+
+                        files.Add(filePath);
+                    }
+                }
+                
 
                 return files;
             }

@@ -109,6 +109,8 @@ namespace Common.Domain
         public string ImageName { get; set; }
 
         public string ImagePath { get; set; }
+
+        public int? UserID { get; set; }
     }
 
     public class Comment : EntityBase<int>

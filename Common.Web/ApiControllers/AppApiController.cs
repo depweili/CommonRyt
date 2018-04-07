@@ -170,8 +170,42 @@ namespace Common.Web.ApiControllers
             }
             return Ok(res);
         }
+
+        /// <summary>
+        /// 个人信息修改
+        /// </summary>
+        /// <param name="userpfdto"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/UserProfile/Edit")]
+        [HttpPost]
+        public IHttpActionResult EditUserProfile(UserProfileDto userpfdto)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.SaveUserProfile(userpfdto);
+
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
         #endregion
-        
+
 
         #region 文章
 
@@ -312,7 +346,7 @@ namespace Common.Web.ApiControllers
 
         #endregion
 
-        #region 病历
+        #region 医生
 
         /// <summary>
         /// 科室字典
@@ -334,6 +368,62 @@ namespace Common.Web.ApiControllers
             {
                 res.code = "100";
                 res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+
+        /// <summary>
+        /// 医院查询
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [Route("api/App/Hospitals")]
+        [HttpGet]
+        public IHttpActionResult GetHospitals(string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new RytService();
+                var data = service.GetHospitals(queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 医生认证
+        /// </summary>
+        /// <param name="doctor"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/DoctorCertified")]
+        [HttpPost]
+        public IHttpActionResult PostDoctorCertified(DoctorCertifiedDto doctor)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.PostDoctorCertified(uid, doctor);
+
+                //返回医生uid进行下一步操作
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
             }
             return Ok(res);
         }
@@ -433,6 +523,14 @@ namespace Common.Web.ApiControllers
 
                 var data = service.PostMedicalRecord(uid, medicalRecordDto);
 
+                //if (!string.IsNullOrEmpty(data))
+                //{
+                //    res.code = "100";
+                //    res.msg = data;
+                //}
+                //res.resData = null;
+
+                //需要返回uid进行下一步操作
                 res.resData = data;
             }
             catch (Exception ex)
@@ -480,11 +578,12 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
-        
+
         /// <summary>
         /// 图片上传
         /// </summary>
         /// <returns></returns>
+        [AuthFilter]
         [Route("api/App/UploadImages")]
         [HttpPost]
         public IHttpActionResult UploadImages()
@@ -497,7 +596,7 @@ namespace Common.Web.ApiControllers
 
                 var httpRequest = HttpContext.Current.Request;
 
-                var data = service.UploadImages(httpRequest);
+                var data = service.UploadImages(uid,httpRequest);
 
                 if (!string.IsNullOrEmpty(data))
                 {
@@ -812,7 +911,7 @@ namespace Common.Web.ApiControllers
         /// </summary>
         /// <param name="queryJson"></param>
         /// <returns></returns>
-        //[AuthFilter]
+        [AuthFilter]
         [Route("api/App/Surveys")]
         [HttpGet]
         public IHttpActionResult GetSurveys(string queryJson="")
@@ -885,7 +984,12 @@ namespace Common.Web.ApiControllers
                 var Answer = JsonConvert.DeserializeObject<List<SurveyQuestionDto>>(Convert.ToString(obj.Answer));
                 var data = service.PostSurveyAnswer(uid, SurveyUid, Answer);
 
-                res.resData = data;
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
             }
             catch (Exception ex)
             {

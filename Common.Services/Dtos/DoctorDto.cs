@@ -56,6 +56,21 @@ namespace Common.Services.Dtos
         public List<string> Images { get; set; }
     }
 
+    public class DoctorCertifiedDto
+    {
+        public string Name { get; set; }
+
+        public int MedicineCategoryID { get; set; }
+
+        public int HospitalID { get; set; }
+
+        public string Title { get; set; }
+
+        public string Expert { get; set; }
+
+        public string InvitationCode { get; set; }
+
+    }
 
     public class DoctorDto : DtoBase<int>
     {
@@ -126,5 +141,7 @@ namespace Common.Services.Dtos
         public string Memo { get; set; }
 
         public int State { get; set; }
+
+        public string ArticleUID { get; set; }
     }
 }

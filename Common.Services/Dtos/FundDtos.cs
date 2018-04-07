@@ -24,6 +24,8 @@ namespace Common.Services.Dtos
         public decimal Order { get; set; }
 
         public List<FundProjectDto> FundProjects { get; set; }
+
+        public string ArticleUID { get; set; }
     }
 
 
@@ -39,5 +41,7 @@ namespace Common.Services.Dtos
 
         [JsonConverter(typeof(CommonDateConverter))]
         public new DateTime? CreateTime { get; set; }
+
+        public string ArticleUID { get; set; }
     }
 }

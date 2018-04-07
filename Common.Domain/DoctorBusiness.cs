@@ -124,6 +124,10 @@ namespace Common.Domain
         public string Memo { get; set; }
 
         public int State { get; set; }
+
+        public int? ArticleID { get; set; }
+
+        public virtual Article Article { get; set; }
     }
 
     public class MyConference : EntityBase<int>

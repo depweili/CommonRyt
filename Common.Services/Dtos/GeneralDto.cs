@@ -132,6 +132,8 @@ namespace Common.Services.Dtos
 
     public class CommentDto
     {
+        public string Type { get; set; }
+
         public Guid SubjectKey { get; set; }
 
         public string Content { get; set; }

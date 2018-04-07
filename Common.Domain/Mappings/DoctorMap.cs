@@ -50,6 +50,9 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Tag).HasMaxLength(20);
             this.Property(t => t.Title).HasMaxLength(20);
             this.Property(t => t.EduTitle).HasMaxLength(20);
+            this.Property(t => t.InvitationCode).HasMaxLength(20);
+            this.Property(t => t.CertificatePicZy).HasMaxLength(200);
+            this.Property(t => t.CertificatePicZc).HasMaxLength(200);
         }
     }
 

@@ -108,13 +108,18 @@ namespace Common.Services
 
                 expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
 
-                //if (!queryParam["areaid"].IsEmpty() && queryParam["areaid"].ToString() != "-1")
-                //{
-                //    string keyword = queryParam["areaid"].ToString();
+                if (!queryParam["Type"].IsEmpty())
+                {
+                    int keyword = queryParam["Type"].ToInt();
 
-                //    var inlist = Function.GetColumnListByTree<int>(db, keyword, "Ryt_BaseArea");
-                //    expression = expression.And(t => inlist.Contains(t.MedicineDepartment.Hospital.AreaID ?? 0));
-                //}
+                    expression = expression.And(t => t.Type == keyword);
+                }
+                else
+                {
+                    expression = expression.And(t => t.Type == 0);
+                }
+
+
                 var StaticPicUrlHost = Function.GetStaticPicUrlHost();
 
                 var query = db.Set<Article>().Where(expression).OrderByDescending(t => t.Order).ThenByDescending(t => t.CreateTime).Select(t => new ItemInformationDto
