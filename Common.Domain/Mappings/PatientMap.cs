@@ -32,14 +32,7 @@ namespace Common.Domain.Mappings
             this.Property(t => t.Content).HasColumnType("ntext");
         }
     }
-
-    public class ReadPatientRecordMap : EntityTypeConfiguration<ReadPatientRecord>
-    {
-        public ReadPatientRecordMap()
-        {
-            this.Property(t => t.Diagnostic).HasMaxLength(1000);
-        }
-    }
+    
 
     public class CharityDrugApplicationMap : EntityTypeConfiguration<CharityDrugApplication>
     {

@@ -56,6 +56,7 @@
     <Compile Include="General.cs" />
     <Compile Include="Doctor.cs" />
     <Compile Include="Integral.cs" />
+    <Compile Include="Mappings\AssistantMap.cs" />
     <Compile Include="Mappings\DoctorMap.cs" />
     <Compile Include="Mappings\GeneralMap.cs" />
     <Compile Include="Mappings\IntegralMap.cs" />
@@ -131,6 +132,26 @@
     <Compile Include="Migrations\201804072044476_t16.Designer.cs">
       <DependentUpon>201804072044476_t16.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804081706408_t17.cs" />
+    <Compile Include="Migrations\201804081706408_t17.Designer.cs">
+      <DependentUpon>201804081706408_t17.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804081716041_t18.cs" />
+    <Compile Include="Migrations\201804081716041_t18.Designer.cs">
+      <DependentUpon>201804081716041_t18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804081844532_t19.cs" />
+    <Compile Include="Migrations\201804081844532_t19.Designer.cs">
+      <DependentUpon>201804081844532_t19.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804110656566_t20.cs" />
+    <Compile Include="Migrations\201804110656566_t20.Designer.cs">
+      <DependentUpon>201804110656566_t20.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804110840278_t21.cs" />
+    <Compile Include="Migrations\201804110840278_t21.Designer.cs">
+      <DependentUpon>201804110840278_t21.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Patient.cs" />
     <Compile Include="RytDbContextInitializer.cs" />
@@ -199,6 +220,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804072044476_t16.resx">
       <DependentUpon>201804072044476_t16.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804081706408_t17.resx">
+      <DependentUpon>201804081706408_t17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804081716041_t18.resx">
+      <DependentUpon>201804081716041_t18.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804081844532_t19.resx">
+      <DependentUpon>201804081844532_t19.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804110656566_t20.resx">
+      <DependentUpon>201804110656566_t20.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804110840278_t21.resx">
+      <DependentUpon>201804110840278_t21.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

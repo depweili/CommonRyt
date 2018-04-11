@@ -155,7 +155,35 @@ namespace Common.Domain
         public string PicUrl { get; set; }
     }
 
-    //文章
+
+    //医学资料
+    public class MedicalToolData : EntityBase<int>
+    {
+        public MedicalToolData()
+        {
+            MedicalToolUid = Guid.NewGuid();
+        }
+        public Guid MedicalToolUid { get; set; }
+
+        public int Type { get; set; }
+
+        public string Title { get; set; }
+
+        public string FrontPic { get; set; }
+
+        public string Content { get; set; }
+
+        public int? ArticleID { get; set; }
+
+        public virtual Article Article { get; set; }
+
+        public string Memo { get; set; }
+
+        public int Order { get; set; }
+
+    }
+
+    //文章 没用
     public class Literature : EntityBase<int>
     {
         public string Title { get; set; }
@@ -166,7 +194,6 @@ namespace Common.Domain
         public string Link { get; set; }
 
         public decimal Price { get; set; }
-
     }
 
     //

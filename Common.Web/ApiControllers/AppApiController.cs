@@ -172,7 +172,7 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 个人信息修改
+        /// 个人信息修改（*）
         /// </summary>
         /// <param name="userpfdto"></param>
         /// <returns></returns>
@@ -428,6 +428,9 @@ namespace Common.Web.ApiControllers
             return Ok(res);
         }
 
+        
+
+
         /// <summary>
         /// 病历信息
         /// </summary>
@@ -506,7 +509,7 @@ namespace Common.Web.ApiControllers
         }
 
         /// <summary>
-        /// 上传病历
+        /// 上传病历（*）
         /// </summary>
         /// <param name="medicalRecordDto"></param>
         /// <returns></returns>
@@ -531,6 +534,182 @@ namespace Common.Web.ApiControllers
                 //res.resData = null;
 
                 //需要返回uid进行下一步操作
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 我的病人（*）
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/MyPatients")]
+        [HttpGet]
+        public IHttpActionResult GetMyPatients(string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetMyPatients(uid, queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 病人详情（*）
+        /// </summary>
+        /// <param name="PatientUid"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/MyPatient")]
+        [HttpGet]
+        public IHttpActionResult GetMyPatient(Guid PatientUid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetMyPatient(uid,PatientUid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+
+        /// <summary>
+        /// 医生诊断（*）
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/Diagnostic")]
+        [HttpPost]
+        public IHttpActionResult PostDiagnostic(DiagnosticDto content)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.PostDiagnostic(uid, content);
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 获取诊断记录（*）
+        /// </summary>
+        /// <param name="patientRecordUid"></param>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/PatientRecordDiagnostics")]
+        [HttpGet]
+        public IHttpActionResult GetDiagnostics(Guid patientRecordUid,string queryJson="")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetDiagnostics(uid,patientRecordUid, queryJson);
+                
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+            }
+            return Ok(res);
+        }
+
+
+        /// <summary>
+        /// 出诊时间（*）
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/MyOutpatientSchedule")]
+        [HttpPost]
+        public IHttpActionResult PostMyOutpatientSchedule(dynamic obj)//Schedule
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.PostMyOutpatientSchedule(uid, Convert.ToString(obj.Schedule));
+
+                if (!string.IsNullOrEmpty(data))
+                {
+                    res.code = "100";
+                    res.msg = data;
+                }
+                res.resData = null;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 医生详情
+        /// </summary>
+        /// <param name="authid"></param>
+        /// <returns></returns>
+        //[AuthFilter]
+        [Route("api/App/DoctorDetail")]
+        [HttpGet]
+        public IHttpActionResult GetDoctor(Guid authid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                //var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetDoctor(authid);
+
                 res.resData = data;
             }
             catch (Exception ex)
@@ -580,7 +759,7 @@ namespace Common.Web.ApiControllers
 
 
         /// <summary>
-        /// 图片上传
+        /// 图片上传（*）
         /// </summary>
         /// <returns></returns>
         [AuthFilter]
@@ -1031,6 +1210,90 @@ namespace Common.Web.ApiControllers
         #endregion
 
 
+        #region 医学资料
 
+        /// <summary>
+        /// 医学助手列表
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [Route("api/App/MedicalToolList")]
+        [HttpGet]
+        public IHttpActionResult GetMedicalToolData(string queryJson = "")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var data = service.GetMedicalToolData(queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// 医学助手详情
+        /// </summary>
+        /// <param name="MedicalToolUid"></param>
+        /// <returns></returns>
+        [Route("api/App/MedicalTool")]
+        [HttpGet]
+        public IHttpActionResult GetMedicalToolDetail(Guid MedicalToolUid)
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var data = service.GetMedicalToolDetail(MedicalToolUid);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+        #endregion
+
+        #region 医生助手
+
+        /// <summary>
+        /// 我的助手（*）
+        /// </summary>
+        /// <param name="queryJson"></param>
+        /// <returns></returns>
+        [AuthFilter]
+        [Route("api/App/MyAssistants")]
+        [HttpGet]
+        public IHttpActionResult GetMyAssistants(string queryJson="")
+        {
+            var res = new ResponseBase();
+            try
+            {
+                var service = new AppService();
+                var uid = Thread.CurrentPrincipal.Identity.Name.ToGuid();
+                var data = service.GetMyAssistants(uid,queryJson);
+
+                res.resData = data;
+            }
+            catch (Exception ex)
+            {
+                res.code = "100";
+                res.msg = ex.Message;
+
+            }
+            return Ok(res);
+        }
+        #endregion
     }
 }

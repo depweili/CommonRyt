@@ -260,5 +260,16 @@ namespace Common.Util
 
             return s < 60 ? "" + decimal.Truncate(s) + " 秒前" : m < 60 ? "" + decimal.Truncate(m) + " 分钟前" : h < 24 ? "" + decimal.Truncate(h) + " 小时前" : d < 2 ? "" + decimal.Truncate(d) + " 天前" : date.ToString("yyyy-MM-dd HH:mm:ss");
         }
+
+        public static int? ToAge(this DateTime birthdate)
+        {
+            DateTime now = DateTime.Now;
+            int age = now.Year - birthdate.Year;
+            if (now.Month < birthdate.Month || (now.Month == birthdate.Month && now.Day < birthdate.Day))
+            {
+                age--;
+            }
+            return age < 0 ? 0 : age;
+        }
     }
 }

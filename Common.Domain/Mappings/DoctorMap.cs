@@ -130,4 +130,24 @@ namespace Common.Domain.Mappings
         }
     }
 
+    public class MedicalToolDataMap : EntityTypeConfiguration<MedicalToolData>
+    {
+        public MedicalToolDataMap()
+        {
+            this.Property(t => t.Title).HasMaxLength(200);
+            this.Property(t => t.Content).HasMaxLength(500);
+            this.Property(t => t.Memo).HasMaxLength(200);
+            this.Property(t => t.FrontPic).HasMaxLength(200);
+        }
+    }
+
+
+    public class ReadPatientRecordMap : EntityTypeConfiguration<ReadPatientRecord>
+    {
+        public ReadPatientRecordMap()
+        {
+            this.Property(t => t.Diagnostic).HasMaxLength(500);
+            this.Property(t => t.Memo).HasMaxLength(200);
+        }
+    }
 }

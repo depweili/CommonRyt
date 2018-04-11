@@ -73,5 +73,11 @@ namespace Common.Services.Dtos
 
         public bool isverified { get; set; }
 
+        public bool isdoctorverified { get; set; }
+
+        public int certifiedstate { get; set; }
+
+        public string doctorcode { get; set; }
+
     }
 }

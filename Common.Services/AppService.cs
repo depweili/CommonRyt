@@ -28,6 +28,8 @@ namespace Common.Services
                 {
                     var userpf = user.UserProfile;
 
+                    var doctor = db.Set<Doctor>().FirstOrDefault(u => u.User.Id == user.Id);
+
                     UserProfileDto userpfdto = new UserProfileDto
                     {
                         authid = authid,
@@ -41,7 +43,10 @@ namespace Common.Services
                         birthday = userpf.BirthDay,
                         area = userpf.Area,
                         username=user.UserName,
-                        avatarurl= userpf.AvatarUrl
+                        avatarurl= userpf.AvatarUrl,
+                        isdoctorverified= doctor.IsVerified,
+                        certifiedstate=doctor.CertifiedState,
+                        doctorcode= doctor.IsVerified?doctor.Code:""
                     };
 
                     return userpfdto;
@@ -207,14 +212,19 @@ namespace Common.Services
                         {
                             department = db.Set<MedicineDepartment>().Add(new MedicineDepartment() { MedicineCategoryID = doctordto.MedicineCategoryID, HospitalID = doctordto.HospitalID });
 
-                            doctor.MedicineDepartment = department;
-
-                            doctor.Name = doctordto.Name;
-
-                            doctor.Expert = doctordto.Expert;
-
-                            doctor.InvitationCode = doctordto.InvitationCode;
+                            
                         }
+
+                        doctor.MedicineDepartment = department;
+
+                        doctor.Name = doctordto.Name;
+
+                        doctor.Expert = doctordto.Expert;
+
+                        doctor.InvitationCode = doctordto.InvitationCode;
+
+                        doctor.Title = doctordto.Title;
+
                         db.SaveChanges();
                     }
                     else
@@ -489,6 +499,181 @@ namespace Common.Services
             }
         }
 
+        
+
+        public dynamic GetMyPatients(Guid uid, string queryJson)
+        {
+            string cacheKey = "GetMyPatients" + uid.ToString() + queryJson;
+            try
+            {
+                var res = CacheHelper.Get<List<dynamic>>(cacheKey);
+
+                if (res != null)
+                {
+                    return res;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            using (var db = base.NewDB())
+            {
+                IEnumerable<ItemInformationDto> dblist = null;
+
+                var expression = LinqExtensions.True<PatientDoctor>();
+                var queryParam = queryJson.ToJObject();
+
+                expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true && t.Doctor.User.AuthID == uid);
+
+                if (!queryParam["Name"].IsEmpty())
+                {
+                    string keyword = queryParam["Name"].ToString();
+
+                    expression = expression.And(t => t.Patient.Name == keyword);
+                }
+
+                int? nullint = null;
+
+                //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                var query = db.Set<PatientDoctor>().Where(expression).OrderByDescending(t => t.CreateTime).Select(t => new
+                {
+                    t.Patient.Uid,
+                    t.Patient.User.UserProfile.NickName,
+                    t.Patient.Name,
+                    t.Patient.Telephone,
+                    t.Patient.Gender,
+                    t.Patient.AreaInfo,
+                    Age = t.Patient.Birthday.HasValue ? DateTime.Now.Year - t.Patient.Birthday.Value.Year : nullint,
+                    t.Patient.User.UserProfile.AvatarUrl
+                });
+
+
+                var list = Function.GetPageData(query, queryParam);
+
+                var res = list.ToList();
+
+                //CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                return res;
+            }
+        }
+
+        
+
+        public DoctorDto GetDoctor(Guid uid)
+        {
+            string cacheKey = "GetDoctor" + uid.ToString();
+            try
+            {
+
+                try
+                {
+                    var res = CacheHelper.Get<DoctorDto>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<Doctor>().Single(t => t.User.AuthID == uid&& (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                    var res = data.MapTo<DoctorDto>();
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public PatientDto GetMyPatient(Guid uid, Guid patientUid)
+        {
+            string cacheKey = "GetMyPatient" + patientUid.ToString();
+            try
+            {
+
+                try
+                {
+                    var res = CacheHelper.Get<PatientDto>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<PatientDoctor>().Single(t => t.Patient.Uid == patientUid && t.Doctor.User.AuthID == uid).Patient;
+
+                    var res = data.MapTo<PatientDto>();
+
+                    var mr = db.Set<PatientMedicalRecord>().Where(t => t.Patient.Uid == data.Uid).OrderBy(t=>t.CreateTime).FirstOrDefault();
+
+                    res.MedicalRecord = mr == null ? null : mr.Content;
+                    res.MedicalRecordUid = mr.PatientRecordUid.ToString();
+                    //var host = Function.GetHostAndApp();
+
+                    //CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+        public string PostMyOutpatientSchedule(Guid authid, string schedule)
+        {
+            string msg = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var doctor = db.Set<Doctor>().FirstOrDefault(u => u.User.AuthID == authid && u.IsValid == true);
+
+                    if (doctor != null)
+                    {
+                        doctor.OutpatientSchedule = schedule;
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        msg = "参数错误";
+                    }
+
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return msg;
+        }
+
         public async Task<string> UploadImages(Guid uid,string type, Guid subjectUid, HttpRequestMessage request)
         {
             string res = string.Empty;
@@ -543,7 +728,7 @@ namespace Common.Services
 
                     string[] namefilter = new string[] { };
 
-                    if (!string.IsNullOrEmpty(type) && subjectUid != default(Guid))
+                    if (!string.IsNullOrEmpty(type))//&& subjectUid != default(Guid)
                     {
                         using (var db = base.NewDB())
                         {
@@ -560,11 +745,12 @@ namespace Common.Services
                                     break;
                                 case "useravatar":
                                     dir = "Avatar";
+                                    subjectUid = uid;
                                     dbitem = db.Set<UserProfile>().Single(t => t.User.AuthID == subjectUid);
                                     break;
                                 case "doctorcertified":
                                     dir = "DoctorCertified";
-                                    dbitem = db.Set<Doctor>().Single(t => t.Uid == subjectUid);
+                                    dbitem = db.Set<Doctor>().Single(t => t.Uid == subjectUid && t.User.Id == user.Id);
                                     namefilter =  new string[]{ "file_zy", "file_zc" };
                                     break;
                                 default:
@@ -590,10 +776,13 @@ namespace Common.Services
                                             break;
                                         case "useravatar":
                                             (dbitem as UserProfile).AvatarUrl = frontPic;
+                                            db.Set<Doctor>().SingleOrDefault(t => t.User.Id == dbitem.Id).Avatar = frontPic;
                                             break;
                                         case "doctorcertified":
-                                            (dbitem as Doctor).CertificatePicZy = filelist.Any(t => t.Contains("file_zy")) ? host + "/" + Function.PathToRelativeUrl(filelist.FirstOrDefault(t => t.Contains("file_zy"))).TrimStart('/') : "";
-                                            (dbitem as Doctor).CertificatePicZc = filelist.Any(t => t.Contains("file_zc")) ? host + "/" + Function.PathToRelativeUrl(filelist.FirstOrDefault(t => t.Contains("file_zc"))).TrimStart('/') : "";
+                                            var d = (dbitem as Doctor);
+                                            d.CertificatePicZy = filelist.Any(t => t.Contains("file_zy")) ? host + "/" + Function.PathToRelativeUrl(filelist.FirstOrDefault(t => t.Contains("file_zy"))).TrimStart('/') : "";
+                                            d.CertificatePicZc = filelist.Any(t => t.Contains("file_zc")) ? host + "/" + Function.PathToRelativeUrl(filelist.FirstOrDefault(t => t.Contains("file_zc"))).TrimStart('/') : "";
+                                            d.CertifiedState = 1;
                                             break;
                                         default:
                                             //(dbitem as MedicalRecord).FrontPic = frontPic;
@@ -1479,7 +1668,233 @@ namespace Common.Services
             }
         }
 
+        public dynamic GetMedicalToolData(string queryJson)
+        {
+            string cacheKey = "GetMedicalToolData" + queryJson;
+            try
+            {
+                try
+                {
+                    var res = CacheHelper.Get<List<MedicalToolDataDto>>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var expression = LinqExtensions.True<MedicalToolData>();
+                    var queryParam = queryJson.ToJObject();
+
+                    expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true);
+
+                    if (!queryParam["Type"].IsEmpty())
+                    {
+                        int keyword = queryParam["Type"].ToInt();
+
+                        expression = expression.And(t => t.Type == keyword);
+                    }
+
+                    var query = db.Set<MedicalToolData>().Where(expression).OrderBy(t => t.Order);
+
+                    var list = Function.GetPageData(query, queryParam);
+
+                    var res = list.MapToList<MedicalToolListDto>();
+
+                    //CacheHelper.Set(cacheKey, res, new TimeSpan(0, _cacheslidingminutes, 0));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
 
 
+        public dynamic GetMedicalToolDetail(Guid medicalToolUid)
+        {
+            string cacheKey = "GetMedicalToolDetail" + medicalToolUid.ToString();
+            try
+            {
+                try
+                {
+                    var res = CacheHelper.Get<MedicalToolData>(cacheKey);
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                using (var db = base.NewDB())
+                {
+                    var data = db.Set<MedicalToolData>().Single(t => t.MedicalToolUid == medicalToolUid);
+
+                    var res = data.MapTo<MedicalToolDataDto>();
+
+                    CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+
+        public dynamic GetMyAssistants(Guid uid, string queryJson)
+        {
+            string cacheKey = "GetMyAssistants" + uid.ToString() + queryJson;
+            try
+            {
+                var res = CacheHelper.Get<List<AssistantDto>>(cacheKey);
+
+                if (res != null)
+                {
+                    return res;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            using (var db = base.NewDB())
+            {
+
+                var expression = LinqExtensions.True<AssistantDoctor>();
+                var queryParam = queryJson.ToJObject();
+
+                expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true 
+                && t.Doctor.User.AuthID == uid && (t.Assistant.IsDeleted ?? false) == false && (t.Assistant.IsValid ?? true) == true);
+
+                if (!queryParam["Name"].IsEmpty())
+                {
+                    string keyword = queryParam["Name"].ToString();
+
+                    expression = expression.And(t => t.Assistant.Name == keyword);
+                }
+
+                //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                var query = db.Set<AssistantDoctor>().Where(expression).OrderByDescending(t => t.CreateTime).Select(t => t.Assistant);
+
+                var list = Function.GetPageData(query, queryParam);
+
+                var res = list.MapToList<AssistantDto>();
+
+                //CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                return res;
+            }
+        }
+
+
+        public string PostDiagnostic(Guid authid, DiagnosticDto content)
+        {
+            string msg = string.Empty;
+            try
+            {
+                using (var db = base.NewDB())
+                {
+                    var doctor = db.Set<Doctor>().FirstOrDefault(t => t.User.AuthID==authid && t.IsValid == true);
+                    var patientrecord = db.Set<PatientMedicalRecord>().FirstOrDefault(t => t.PatientRecordUid== content.PatientRecordUid && t.IsValid == true);
+
+                    if (doctor != null)
+                    {
+                        ReadPatientRecord c = new ReadPatientRecord { DoctorID=doctor.Id, PatientMedicalRecordID= patientrecord.Id,Diagnostic=content.Diagnostic,Memo=content.Memo };
+                        db.Set<ReadPatientRecord>().Add(c);
+
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        msg = "请登陆后录入";
+                    }
+
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return msg;
+        }
+
+
+        public dynamic GetDiagnostics(Guid uid, Guid patientRecordUid, string queryJson)
+        {
+            string cacheKey = "GetDiagnostics" + patientRecordUid.ToString() + queryJson;
+            try
+            {
+                var res = CacheHelper.Get<List<dynamic>>(cacheKey);
+
+                if (res != null)
+                {
+                    return res;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            using (var db = base.NewDB())
+            {
+                IEnumerable<ItemInformationDto> dblist = null;
+
+                var expression = LinqExtensions.True<ReadPatientRecord>();
+                var queryParam = queryJson.ToJObject();
+                //t.Doctor.User.AuthID == uid
+                expression = expression.And(t => (t.IsDeleted ?? false) == false && (t.IsValid ?? true) == true &&t.PatientMedicalRecord.PatientRecordUid== patientRecordUid);
+                
+
+                int? nullint = null;
+
+                string defaultavatar = Function.GetStaticPicUrl("useravatar.png", null);
+
+                //var StaticPicUrlHost = Function.GetStaticPicUrlHost();
+
+                var query = db.Set<ReadPatientRecord>().Where(expression).OrderByDescending(t => t.CreateTime).Select(t => new
+                {
+                    t.Doctor.Name,
+                    t.Doctor.Uid,
+                    t.Doctor.User.AuthID,
+                    //t.Doctor.Avatar,
+                    AvatarUrl = string.IsNullOrEmpty(t.Doctor.Avatar) ? defaultavatar : t.Doctor.Avatar,
+                    t.Diagnostic,
+                    t.CreateTime
+                });
+
+
+
+                var list = Function.GetPageData(query, queryParam);
+
+                var res = list.ToList();
+                
+
+                //CacheHelper.Set(cacheKey, res, DateTime.Now.AddMinutes(_cacheabsoluteminutes));
+
+                return res;
+            }
+        }
     }
 }

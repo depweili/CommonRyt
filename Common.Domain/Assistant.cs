@@ -8,14 +8,31 @@ namespace Common.Domain
 {
     public class Assistant : EntityBase<int>
     {
+        public Assistant()
+        {
+            AssistantUid = Guid.NewGuid();
+        }
+        public Guid AssistantUid { get; set; }
+
         public string Name { get; set; }
 
-        public string Level { get; set; }
+        public string AvatarUrl { get; set; }
 
+        public string MobilePhone { get; set; }
 
+        public string QQ { get; set; }
+
+        public string WeChat { get; set; }
+        
+
+        //助手级别
+        public int Level { get; set; }
+
+        public string InvitationCode { get; set; }
+
+        public DateTime? ICodeCreateTime { get; set; }
     }
-
-    //推送助手结构
+    
     public class AssistantManager : EntityBase<int>
     {
         public int AssistantID { get; set; }

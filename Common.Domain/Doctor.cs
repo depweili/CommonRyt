@@ -105,7 +105,7 @@ namespace Common.Domain
 
         public string CertificatePicZc { get; set; }
 
-
+        public int CertifiedState { get; set; }
     }
 
     public class MedicalRecord : SubjectEntity<int>

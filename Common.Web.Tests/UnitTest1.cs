@@ -275,5 +275,57 @@ SELECT * FROM temp");
                 db.SaveChanges();
             }
         }
+
+        [TestMethod]
+        public void InitData_MedicalToolData()
+        {
+            using (var db = new CommonContext())
+            {
+
+                db.Set<MedicalToolData>().AddRange(new List<MedicalToolData>() {
+                    new MedicalToolData{  Title="平均动脉压", Content=@"英文缩写为 MAP（mean arterial pressure）一个心动周期中动脉血压的平均值称为平均动脉压。正常成年人平均动脉压正常值为70~105mmHg。计算公式如下：平均动脉压=(收缩压+2×舒张压)/3。也可表示为：平均动脉压=舒张压+1/3脉压差。"},
+                    new MedicalToolData{  Title="总外周血管阻力（SVR）", Content=@"SVR=（平均动脉压－中心静脉压）÷心排出量×80 正常值为100-130kpa.s/L"},
+                    new MedicalToolData{  Title="有效血浆流量（ERPF）", Content=@"ERPF=（尿液PAH浓度×尿量）÷血浆PAH浓度（mi/min）"}
+                });
+
+                db.SaveChanges();
+            }
+        }
+
+
+        [TestMethod]
+        public void InitData_Assistant()
+        {
+            using (var db = new CommonContext())
+            {
+                var a = new Assistant { Name = "张助理", QQ = "123", WeChat = "234", MobilePhone = "12321321", AvatarUrl = null };
+                db.Set<Assistant>().Add(a);
+                var b = new Assistant { Name = "王助理", QQ = "3434", WeChat = "65656", MobilePhone = "545454545", AvatarUrl = null };
+                db.Set<Assistant>().Add(b);
+
+                var d = db.Set<Doctor>().FirstOrDefault(t => t.Id == 73);
+
+                db.Set<AssistantDoctor>().AddRange(new List<AssistantDoctor>() {
+                    new AssistantDoctor(){  Assistant=a,
+                    Doctor=d},
+                    new AssistantDoctor(){  Assistant=b,
+                    Doctor=d},
+                });
+
+                var d1 = db.Set<Doctor>().FirstOrDefault(t => t.Id == 76);
+                db.Set<AssistantDoctor>().AddRange(new List<AssistantDoctor>() {
+                    new AssistantDoctor(){  Assistant=a,
+                    Doctor=d1},
+                    new AssistantDoctor(){  Assistant=b,
+                    Doctor=d1},
+                });
+
+                //db.Set<Assistant>().AddRange(new List<Assistant>() {
+                //    new Assistant{  Name="张助理", QQ="123",WeChat="234",MobilePhone="12321321", AvatarUrl=null},
+                //});
+
+                db.SaveChanges();
+            }
+        }
     }
 }

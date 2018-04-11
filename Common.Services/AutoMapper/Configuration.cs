@@ -28,7 +28,8 @@ namespace Common.Services.AutoMapper
                 .ForMember(t => t.HospitalName, opt => opt.MapFrom(src => src.MedicineDepartment.Hospital.Name))
                 .ForMember(t => t.MedicineCategoryName, opt => opt.MapFrom(src => src.MedicineDepartment.MedicineCategory.Name));
 
-                cfg.CreateMap<Patient, PatientDto>();
+                cfg.CreateMap<Patient, PatientDto>()
+                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => src.User.UserProfile.AvatarUrl));
 
                 cfg.CreateMap<CharityDrugApplication, CharityDrugApplicationDto>()
                 .ForMember(t => t.StrCharityDrugUid, opt => opt.MapFrom(src=>src.CharityDrugUid.ToString()))
@@ -88,7 +89,20 @@ namespace Common.Services.AutoMapper
                 .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()));
 
                 cfg.CreateMap<FundProject, FundProjectDto>()
-                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()));
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()))
+                .ForMember(t => t.FrontPic, opt => opt.MapFrom(src => Function.GetStaticPicUrl(src.FrontPic, null)));
+
+
+                cfg.CreateMap<MedicalToolData, MedicalToolDataDto>()
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()))
+                .ForMember(t => t.FrontPic, opt => opt.MapFrom(src => Function.GetStaticPicUrl(src.FrontPic, null)));
+                cfg.CreateMap<MedicalToolData, MedicalToolListDto>()
+                .ForMember(t => t.ArticleUID, opt => opt.MapFrom(src => src.Article == null ? "" : src.Article.ArticleUID.ToString()))
+                .ForMember(t => t.FrontPic, opt => opt.MapFrom(src => Function.GetStaticPicUrl(src.FrontPic, null)));
+
+                cfg.CreateMap<Assistant, AssistantDto>()
+                .ForMember(t => t.AvatarUrl, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.AvatarUrl) ? Function.GetStaticPicUrl("useravatar.png", null) : src.AvatarUrl));
+
 
             });
 

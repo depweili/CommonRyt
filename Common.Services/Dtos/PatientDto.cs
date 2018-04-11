@@ -8,7 +8,25 @@ namespace Common.Services.Dtos
 {
     public class PatientDto : DtoBase<int>
     {
+        public Guid Uid { get; set; }
+        public string Name { get; set; }
+        public string Gender { get; set; }
 
+        public DateTime? Birthday { get; set; }
+        public string Telephone { get; set; }
+        public string AreaInfo { get; set; }
+        public string Address { get; set; }
+
+        public int Height { get; set; }
+        public int Weight { get; set; }
+
+        public string Health { get; set; }
+
+        public string AvatarUrl { get; set; }
+
+        public string MedicalRecord { get; set; }
+
+        public string MedicalRecordUid { get; set; }
     }
 
     public class CharityDrugApplicationDto : DtoBase<int>

@@ -144,4 +144,61 @@ namespace Common.Services.Dtos
 
         public string ArticleUID { get; set; }
     }
+
+    public class MedicalToolDataDto 
+    {
+        public Guid MedicalToolUid { get; set; }
+        public string Title { get; set; }
+
+        public string FrontPic { get; set; }
+
+        public string Content { get; set; }
+
+        public string ArticleUID { get; set; }
+
+        public string Memo { get; set; }
+
+        public int Order { get; set; }
+
+    }
+
+    public class MedicalToolListDto
+    {
+        public Guid MedicalToolUid { get; set; }
+
+        public string Title { get; set; }
+
+        public string FrontPic { get; set; }
+
+        public string ArticleUID { get; set; }
+
+    }
+
+    public class AssistantDto
+    {
+        public Guid AssistantUid { get; set; }
+
+        public string Name { get; set; }
+
+        public string AvatarUrl { get; set; }
+
+        public string MobilePhone { get; set; }
+
+        public string QQ { get; set; }
+
+        public string WeChat { get; set; }
+
+        //助手级别
+        public int Level { get; set; }
+
+    }
+
+
+    public class DiagnosticDto
+    {
+        public Guid PatientRecordUid { get; set; }
+        public string Diagnostic { get; set; }
+        public string Memo { get; set; }
+    }
+
 }

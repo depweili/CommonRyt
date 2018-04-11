@@ -17,8 +17,7 @@ namespace Common.Services
     public static class Function
     {
         public static Random random = new Random();
-
-
+        
         public static string SendSms(SmsDto sms)
         {
             string res = string.Empty;
@@ -162,13 +161,21 @@ namespace Common.Services
 
         public static string GetStaticPicUrl(string pic, string subdir = null)
         {
-            var host = GetHostAndApp();
-            var url = host + @"/Images/";
-            if (!string.IsNullOrEmpty(subdir))
+            string url = string.Empty;
+            if (!string.IsNullOrEmpty(pic)&&!pic.ToLower().StartsWith("http"))
             {
-                url += subdir + "/";
+                var host = GetHostAndApp();
+                url = host + @"/Images/";
+                if (!string.IsNullOrEmpty(subdir))
+                {
+                    url += subdir + "/";
+                }
+                url += pic;
             }
-            url += pic;
+            else
+            {
+                url = pic;
+            }
 
             return url;
         }
@@ -316,6 +323,8 @@ namespace Common.Services
             var path = Function.GetImageStorageDirectory(subdir, createtime);
             List<string> files = new List<string>();
 
+            int maxFileLength = ConfigHelper.GetConfigInt("MaxFileLength", 4000000);
+
             try
             {
                 var index = 1;
@@ -326,6 +335,11 @@ namespace Common.Services
                         var postedFile = httpRequest.Files[file];
 
                         if (postedFile == null) continue;
+
+                        if (postedFile.ContentLength > maxFileLength)
+                        {
+                            throw new Exception("文件大小超过限制");
+                        }
 
                         var newFileName = Path.GetExtension(postedFile.FileName);//获取后缀名  
                         newFileName = namekey + "_" + file + newFileName;

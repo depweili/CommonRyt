@@ -50,6 +50,12 @@ namespace Common.Domain
 
     public class PatientMedicalRecord : EntityBase<int>
     {
+        public PatientMedicalRecord()
+        {
+            PatientRecordUid = Guid.NewGuid();
+        }
+
+        public Guid PatientRecordUid { get; set; }
         public int? PatientID { get; set; }
         public virtual Patient Patient { get; set; }
 
